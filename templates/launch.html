@@ -1,0 +1,105 @@
+<div class="irs padding" ng-controller="LaunchController" ng-init="Launch.file = file">
+  <!-- First section -->
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>Scenario</h2>
+
+      <div class="irs form-inline-box">
+        <div class="irs form-inline">
+          <input class="irs large" type="text" ng-model="Launch.scenario_uri" placeholder="Scenario path" />
+        </div>
+        <div class="irs form-inline">
+          <button class="irs large" ng-click="Launch.openScenario();">Import</button>
+        </div>
+      </div><br />
+      Number of candidates: {{ Launch.scenario.content.candidates.candidates.length || 0 }}<br />
+      Number of instances: {{ Launch.scenario.content.instances.testing.length || 0 }} (testing), {{ Launch.scenario.content.instances.training.length || 0 }} (training)
+
+    </div>
+    <div class="col-sm-6">
+      <h2>Application</h2>
+      <div>
+        <select class="irs large" ng-model="Launch.command.type" ng-change="Launch.applicationSelected = true">
+          <option value="select">Select..</option>
+          <option value="irace" selected>Irace</option>
+          <option value="ablation">Ablation</option>
+          <option value="full">Full Exploration</option>
+        </select>
+      </div>
+      <br />
+      You will be able to provide additional settings after selecting an application.
+      <div class="irs form-inline-box">
+        <div class="irs form-inline" align="right">
+          Write report {{ Launch.test }} in new file:&nbsp;&nbsp;
+        </div>
+        <div class="irs form-inline">
+          <input type="checkbox" class="md-secondary" aria-label="Generate new file" ng-model="Launch.generateNewFile"></input>
+        </div>
+        <div class="irs form-inline" align="right">
+          Number of cores:&nbsp;&nbsp;
+        </div>
+        <div class="irs form-inline">
+          <input type="text" class="irs nomargin" ng-model="Launch.command.parallel" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+
+  <!-- Second section -->
+  <div class="row" ng-show="Launch.applicationSelected">
+    <div class="col-sm-12" ng-show="Launch.command.type=='irace'">
+      <h2>Irace: advanced settings</h2>
+      <div class="row">
+        <div class="col-sm-6">
+          Select the first candidate:
+        </div>
+        <div class="col-sm-6">
+          Parameters:
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12" ng-show="Launch.command.type=='ablation'">
+      <h2>Ablation: advanced settings</h2>
+    </div>
+    <div class="col-sm-12" ng-show="Launch.command.type=='full'">
+      <div class="row">
+        <div class="col-sm-6">
+          <h2>Candidates</h2>
+          <div class="irs list">
+            <div ng-repeat="c in Launch.scenario.content.candidates.candidates">{{ c.label }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <h2>Parameters</h2>
+          <div class="spacer small"></div>
+          <select class="irs large" type="text">
+            <option value="{{ p }}" ng-repeat="p in Launch.scenario.content.candidates.parameters"> {{ p }}</option>
+          </select>
+          <div class="spacer small"></div>
+          <select class="irs large" type="text">
+            <option value="{{ p }}" ng-repeat="p in Launch.scenario.content.candidates.parameters"> {{ p }}</option>
+          </select>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="row" ng-show="Launch.applicationSelected">
+      <div class="col-sm-12">
+        <button class="irs large" ng-click="Launch.launchExploration();">Launch</button>
+      </div>
+    </div>
+    <div class="spacer"></div>
+
+    <!-- JSON preview -->
+    <div ng-show="Launch.isLaunched">
+    Command preview:
+    <pre>{{ Launch.command.preview | json }}</pre>
+    Output:
+    <pre>{{ Launch.result | json }}</pre>
+  </div>
+    <!-- <pre>{{ file | json}}</pre> -->
+
+    <!-- Results -->
+  </div>

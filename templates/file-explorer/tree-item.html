@@ -1,0 +1,13 @@
+<span class="irs link" ng-if="file.type == 'dir'" ng-click="FileExplorer.openDir(file);" ng-class="{'blue': file.angle == 'down'}">
+  <i class="fa fa-fw fa-angle-{{ file.angle }} fa-small"></i>&nbsp;<i class="fa fa-folder fa-small">&nbsp;</i>&nbsp;{{ file.name }}
+</span>
+
+<!-- File -->
+<span class="irs link" ng-if="file.type == 'file'" ng-class="{'blue': file.isOpened}" ng-click="FileManager.openFile(file)">
+  <i class="fa fa-fw fa-small"></i>&nbsp;<i class="fa fa-file-text-o fa-small"></i>&nbsp;&nbsp;{{ file.name }}
+</span>
+
+<!-- Nodes -->
+<ul class="irs file-exp">
+  <li class="irs file-exp" ng-repeat="file in file.nodes" ng-include="'templates/file-explorer/tree-item.html'"></li>
+</ul>

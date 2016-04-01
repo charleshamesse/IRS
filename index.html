@@ -1,0 +1,60 @@
+<!doctype html>
+<html ng-app="app" ng-cloak>
+<head>
+	<meta charset="utf-8">
+	<meta content="utf-8" http-equiv="encoding">
+	<title>IR Studio</title>
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="index.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+
+	<script src="assets/js/angular.min.js"></script>
+
+	<script src="app/index.js"></script>
+	<script src="app/factories/d3.js"></script>
+	<script src="app/services/ResultParser.js"></script>
+	<script src="app/services/FileWriter.js"></script>
+	<script src="app/controllers/IndexController.js"></script>
+	<script src="app/controllers/SetupController.js"></script>
+	<script src="app/controllers/LaunchController.js"></script>
+	<script src="app/controllers/ResultsController.js"></script>
+	<script src="app/factories/FileExplorer.js"></script>
+	<script src="app/factories/FileManager.js"></script>
+
+</head>
+<body ng-controller="IndexController">
+	<div class="container-fluid irs full-height">
+		<div class="row irs main">
+			<!-- Sidebar -->
+			<div class="col-sm-2 hidden-xs irs sidebar nopadding" ng-cloak>
+				<!-- Root node -->
+				<span class="irs file-exp root-dir blue">
+					<i class="fa fa-fw fa-angle-down fa-small"></i>&nbsp;<i class="fa fa-folder fa-small">&nbsp;</i>&nbsp;{{ FileExplorer.rootNode.name }}&nbsp;({{ FileExplorer.rootNode.path }})
+				</span>
+
+				<!-- List -->
+				<ul class="irs file-exp">
+					<li class="irs file-exp" ng-repeat="file in FileExplorer.tree" ng-include="'templates/file-explorer/tree-item.html'"></li>
+				</ul>
+			</div>
+
+			<!-- Main panel -->
+			<div class="col-sm-10 irs center-panel full-height nopadding">
+
+				<ul class="irs tabs">
+					<li ng-repeat="file in FileManager.filesOpened" class="irs tab" ng-click="FileManager.activateFile(file); alert('c')" ng-class="{active: file.active}">
+						{{file.name}} <button class="close irs close-tab" type="button" >×</button>
+					</li>
+				</ul>
+
+				<div class="irs contents">
+					<div ng-repeat="file in FileManager.filesOpened" ng-show="file.active">
+						<div class="irs editor" ng-include="file.editor"></div>
+					</div>
+				</div>
+
+	</div>
+</div>
+</div>
+</body>
+</html>

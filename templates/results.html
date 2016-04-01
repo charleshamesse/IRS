@@ -1,0 +1,21 @@
+<div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Exploration results</h2>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    </div>
+    <div class="col-sm-12">
+      Ordinal plot:
+      <d3-ordinal-line data="d3Data" label="name"></d3-bars>
+    </div>
+    <div class="col-sm-12">
+      Line plot:
+      <d3-line data="d3Data2" label="name2"></d3-bars>
+    </div>
+    <div class="col-sm-12">
+      <pre>{{ Results.parse | json}}</pre>
+      <pre>{{ file | json}}</pre>
+    </div>
+</div>
+</div>

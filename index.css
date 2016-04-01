@@ -1,0 +1,279 @@
+html,
+body {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
+	font-weight: 300;
+}
+
+:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+header {
+	position: absolute;
+	width: 400px;
+	height: 250px;
+	top: 50%;
+	left: 50%;
+	margin-top: -125px;
+	margin-left: -250px;
+	text-align: center;
+}
+
+h1 {
+	font-size: 60px;
+	font-weight: 100;
+	margin: 0;
+	padding: 0;
+}
+h2 {
+	font-weight: 100;
+	margin: 0 0 15px 0;
+	padding: 0;
+}
+h3 {
+	font-weight: 200;
+	margin: 0;
+	padding: 0;
+}
+
+.irs.main {
+	height:100%;
+}
+.irs.sidebar {
+	background-color: rgb(245, 245, 245);
+	height: 100%;
+	border-right: 1px solid rgb(190, 190, 190);
+	overflow-x: auto;
+}
+.irs.center-panel {
+	max-height: 100%;
+	overflow-x: auto;
+	padding:0;
+}
+
+.irs.full-height {
+	height: 100%;
+}
+
+.irs.large {
+	width:100%;
+}
+.irs.nopadding {
+	padding: 0;
+}
+.irs.padding {
+	padding: 15px;
+}
+
+.irs.editor {
+	overflow-y: auto;
+	overflow-x: auto;
+	height:auto;
+}
+
+.irs.tabs {
+	width: 100%;
+	margin:0;
+	padding: 0;
+	border: 0;
+	overflow-x: auto;
+	display: table;
+	height: 30px;
+	border-collapse: collapse;
+}
+.irs.tab {
+	font-weight: 300;
+	min-width: 200px;
+	display: table-cell;
+	border: 1px solid rgb(170, 170, 170);
+	border-top: none;
+	background: -webkit-linear-gradient(top, #d4d4d4 0%,#cacaca 100%);
+	margin: 0;
+	line-height: 30px;
+	height: 30px;
+	color: #222;
+	text-align: center;
+}
+button.irs.close-tab {
+	line-height: 30px;
+	margin-right: 10px;
+	margin-top: -2px;
+}
+.irs.tab:first-child {
+	border-left: none;
+}
+.irs.tab.active {
+	background: -webkit-linear-gradient(top, #c6c6c6 0%,#b9b9b9 100%);
+}
+.axis path {
+	fill: none;
+	stroke: #222;
+	shape-rendering: crispEdges;
+}
+.axis text {
+	font-size: 13px;
+}
+
+
+/**  File Explorer */
+ul.irs.file-exp li.irs.file-exp ul.irs.file-exp {
+	white-space: nowrap;
+	font-size: 1em; /*stops nested lists scaling*/
+	cursor: pointer !important;
+	padding-bottom: 2px;
+}
+ul.irs.file-exp {
+	white-space: nowrap;
+	font-size: 1em; /*stops nested lists scaling*/
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+li.irs.file-exp {
+	white-space: nowrap;
+	font-size: 1em;
+	padding-left: 10px;
+}
+span.irs.link {
+	cursor: pointer;
+}
+.file-exp i {
+	color: rgb(115, 115, 115);
+}
+
+span.irs.file-exp.root-dir {
+	white-space: nowrap;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.spacer {
+	height: 15px;
+}
+.spacer.small {
+	height: 5px;
+}
+
+/** Forms */
+
+input.irs, select.irs {
+	border: none;
+	background: rgba(0, 0, 0, 0.03);
+	line-height: 36px;
+	height: 36px;
+	margin: 0;
+	padding: 0 0 0 5px;
+}
+
+button.irs {
+	border: none;
+	margin: 0;
+	padding: 0;
+	height: 36px;
+	line-height: 36px;
+}
+button.irs:not(.close):hover {
+	background-color: rgb(170, 170, 170);
+	color: #000;
+}
+.irs.form-inline-box {
+	display: table;
+	width: 100%;
+}
+.irs.form-inline {
+	display: table-cell;
+}
+
+
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+          stroke-width: 0;
+}
+
+.irs.candidate {
+	height: 30px;
+	line-height: 30px;
+}
+.irs.candidate-cb {
+	width: 20px;
+}
+.irs.overflow-table {
+	overflow-x: auto;
+	max-width: 100%;
+}
+td.irs.parameter-idx {
+	width: 5%;
+	text-align: right;
+}
+td.irs.parameter-data {
+	width: 19%;
+}
+td.irs.candidate-idx {
+	width: 30px;
+	text-align: right;
+}
+td.irs.candidate-actions {
+	width: 80px;
+	min-width: 100px;
+}
+td.irs.candidate-label {
+	width: 300px;
+	min-width: 300px;
+}
+td.irs.candidate-data {
+	width: 100px;
+	min-width: 100px;
+}
+.padding-r {
+	padding-right: 15px;
+}
+tr.irs.head td {
+	font-weight: bold;
+	color: #555;
+}
+table tr {
+	border-bottom: 1px solid #ebebeb;
+	width: 100%;
+}
+table tr:not(.irs.head):last-child {
+	border-bottom: none;
+}
+table tr td {
+	border-right: 1px solid #ebebeb;
+	padding-left: 5px;
+}
+table tr td:last-child {
+	border-right: none;
+}
+.overflow-tbody {
+	max-height: 200px;
+	overflow-y: auto;
+}
+input.irs.discreet {
+	background: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+.irs.history {
+	border-left: 1px solid #eee;
+	height: 100%;
+	overflow-y: auto;
+	min-height: 100%;
+}
