@@ -1,6 +1,7 @@
-# app
+# IR Studio
 
-> My superb app
+> Iterated Racing Studio. Optimization toolbox, implementing algorithm tuners from Irace, Ablation and Full Exploration.
+Developed by Charles Hamesse for Iridia & Ecole Polytechnique de Bruxelles, 2015-2016.
 
 
 ## Dev
