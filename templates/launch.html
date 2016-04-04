@@ -71,15 +71,67 @@
           </div>
         </div>
         <div class="col-sm-6">
+          <div class="row">
+            <div class="col-sm-6">
           <h2>Parameters</h2>
+        </div>
+        <div class="col-sm-6" align="right">
+            <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
+          </div>
+        </div>
           <div class="spacer small"></div>
-          <select class="irs large" type="text">
-            <option value="{{ p }}" ng-repeat="p in Launch.scenario.content.candidates.parameters"> {{ p }}</option>
-          </select>
+
+          <div class="overflow-tbody">
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+          <button
+            ng-click="p.selected = !p.selected;"
+            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
+            type="button" class="btn btn-default irs tag">
+              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+          </button>
+        </div>
           <div class="spacer small"></div>
-          <select class="irs large" type="text">
-            <option value="{{ p }}" ng-repeat="p in Launch.scenario.content.candidates.parameters"> {{ p }}</option>
-          </select>
         </div>
         </div>
       </div>

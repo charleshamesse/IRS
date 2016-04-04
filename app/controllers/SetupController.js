@@ -2,7 +2,14 @@ angular.module('app')
 .controller('SetupController', function($scope) {
   // Global
   $scope.Setup = {
-    "history": []
+    "history": [],
+    "display": {
+      "hookrun": true,
+      "instances": true,
+      "parameters": true,
+      "candidates": true,
+      "history": true
+    }
   };
 
   // Dependencies
@@ -102,28 +109,21 @@ angular.module('app')
         throw err;
         console.log(err);
       }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      var cnt2 = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          output[cnt]= line;
-          cnt++;
-          var words = line.trim().split("\t");
-          if(words[0]) {
-            if(words[4]) var condition = words[4].split("| ")[1];
-            else var condition = "";
-            var param = {
-              "name": words[0],
-              "switch": words[1],
-              "type": words[2],
-              "values": words[3],
-              "conditions": condition,
-              "active": true
-            };
-            params.push(param);
-          }
+      var lines = data.trim().split('\n');
+      lines.forEach(function(l) {
+        if(l[0] != '#' && l != "") {
+          var p = {};
+          var line = l.substring(0, l.indexOf('"'));
+          p.name = line.trim();
+          var line2 = l.substring(l.indexOf('"')+1);
+          p.switch = line2.substring(0, line2.indexOf('"'));
+          var line3 = line2.substring(line2.indexOf('"')+1).trim();
+          p.type = line3[0];
+          p.values = line3.slice(1).substring(0, line3.indexOf(")")).trim();
+          var line4 = line3.slice(line3.indexOf(")")+1).trim();
+          p.conditions = line4.slice(line4.indexOf("|")+2);
+          console.log(line);
+          params.push(p);
         }
       });
       $scope.Setup.file.content.content.parameters = params;

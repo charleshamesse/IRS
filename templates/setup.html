@@ -1,13 +1,17 @@
-<div class="irs padding" ng-controller="SetupController" ng-init="Setup.file = file">
-  <div class="row">
-    <div class="col-sm-9">
+<div class="irs full-height" ng-controller="SetupController" ng-init="Setup.file = file">
+  <div class="row irs full-height grid-right-panel">
+    <div
+    class="col-sm-12 irs border-right full-height"
+    ng-class="{'col-md-9': Setup.display.history, 'col-md-1': !Setup.display.history}"
+    style="overflow-y: auto;">
+      <div class="irs center-padding-wrapper">
       <div class="row">
         <div class="col-sm-6">
 
-          <h2>Instances</h2>
+          <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.instances, 'fa-angle-right': !Setup.display.instances}" ng-click="Setup.display.instances = !Setup.display.instances"></i> Instances</h2>
 
 
-          <div class="irs form-inline-box">
+          <div class="irs form-inline-box" ng-show="Setup.display.instances">
             <div class="irs form-inline">
               <input class="irs large" type="text" ng-model="file.content.content.instances.training_uri" placeholder="Training instances" />
             </div>
@@ -16,9 +20,9 @@
             </div>
           </div>
 
-          <div class="spacer"></div>
+          <div class="spacer" ng-show="Setup.display.instances"></div>
 
-          <div class="irs form-inline-box">
+          <div class="irs form-inline-box" ng-show="Setup.display.instances">
             <div class="irs form-inline">
               <input class="irs large" type="text" ng-model="file.content.content.instances.testing_uri" placeholder="Testing instances" />
             </div>
@@ -28,9 +32,9 @@
           </div>
         </div>
         <div class="col-sm-6">
-          <h2>Hook-run method</h2>
+          <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.hookrun, 'fa-angle-right': !Setup.display.hookrun}" ng-click="Setup.display.hookrun = !Setup.display.hookrun"></i> Hook-run method</h2>
 
-          <div class="irs form-inline-box">
+          <div class="irs form-inline-box" ng-show="Setup.display.hookrun">
             <div class="irs form-inline">
               <input class="irs large" type="text" ng-model="file.content.content.hookrun_uri" placeholder="Hook-run method path" />
             </div>
@@ -41,25 +45,24 @@
         </div>
       </div>
       <div class="spacer"></div>
-      <div class="spacer"></div>
       <div class="row">
         <div class="col-xs-8">
-          <h2>Parameters</h2>
+          <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.parameters, 'fa-angle-right': !Setup.display.parameters}" ng-click="Setup.display.parameters = !Setup.display.parameters"></i> Parameters</h2>
         </div>
-        <div class="col-xs-4" align="right">
+        <div class="col-xs-4" align="right" ng-show="Setup.display.parameters">
           <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
         </div>
 
-        <div class="col-sm-12">
+        <div class="col-sm-12" ng-show="Setup.display.parameters">
           <div class="irs">
             <table cellspacing="10" cellpadding="5" style="width: 100%;">
               <tr class="irs head">
                 <td class="irs parameter-idx padding-r">#</td>
                 <td class="irs parameter-data">Name</td>
                 <td class="irs parameter-data">Switch</td>
-                <td class="irs parameter-data">Type</td>
+                <td class="irs parameter-type">Type</td>
                 <td class="irs parameter-data">Values</td>
-                <td class="irs parameter-data">Conditions</td>
+                <td class="irs parameter-conditions">Conditions</td>
               </tr></table>
               <div class="overflow-tbody">
                 <table cellspacing="10" cellpadding="5" style="width: 100%;">
@@ -67,9 +70,15 @@
                     <td class="irs parameter-idx padding-r">{{ $index+1 }}</td>
                     <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.name" /></td>
                     <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.switch" /></td>
-                    <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.type" /></td>
+                    <td class="irs parameter-type">
+                      <select ng-model="parameter.type" class="irs large discreet">
+                        <option value="i">Integer</option>
+                        <option value="c">Category</option>
+                        <option value="r">Real</option>
+                        <option value="o">Order</option>
+                      </select>
                     <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.values" /></td>
-                    <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.conditions" /></td>
+                    <td class="irs parameter-conditions"><input class="irs discreet parameter" type="text" ng-model="parameter.conditions" /></td>
                   </tr></table>
                   <div ng-if="(Setup.file.content.content.parameters | filter: searchParameters).length == 0">No result found.</div>
 
@@ -90,68 +99,76 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-sm-3 irs history">
-          <h2>History</h2>
-          Logs for this file are empty.
-        </div>
-      </div>
+          <div class="spacer"></div>
+          <div class="row">
+            <div class="col-xs-8">
+              <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.candidates, 'fa-angle-right': !Setup.display.candidates}" ng-click="Setup.display.candidates = !Setup.display.candidates"></i> Candidates</h2>
+            </div>
+            <div class="col-xs-4" align="right" ng-show="Setup.display.candidates">
+              <input type="text" ng-model="searchCandidates" class="irs" placeholder="Filter candidates.."/>
+            </div>
+            <div class="col-xs-12" ng-show="Setup.display.candidates">
+              <div class="irs overflow-table">
+                <table cellspacing="10" cellpadding="5">
+                  <tr class="irs head">
+                    <td class="irs candidate-idx padding-r">#</td>
+                    <td class="irs candidate-actions">Actions</td>
+                    <td class="irs candidate-label"><strong>Label</strong></td>
+                    <td ng-repeat="parameter in Setup.file.content.content.candidates.parameters track by $index" class="irs candidate-data">
+                      {{ parameter }}
+                    </td>
+                  </tr>
+                </table>
+                <table cellspacing="10" cellpadding="5">
+                  <tr ng-repeat="candidate in Setup.file.content.content.candidates.candidates | filter: searchCandidates">
+                    <td class="irs candidate-idx padding-r">{{ $index+1 }}</td>
+                    <td class="irs candidate-actions">
+                      <input type="checkbox" aria-label="Use candidate" ng-model="candidate.selected"></input>&nbsp;&nbsp;
+                      <a href="" ng-click="Setup.deleteCandidate($index);"><i class="fa fa-trash"></i></a>
+                    </td>
+                    <td  class="irs candidate-label"><input class="irs discreet candidate-label" type="text" ng-model="candidate.label" /></td>
+                    <td  class="irs candidate-data" ng-repeat="parameter in Setup.file.content.content.candidates.parameters track by $index"><input class="irs discreet" type="text" ng-model="candidate.values[$index]" /></td>
+                  </tr>
+                </table>
 
-      <div class="spacer"></div>
-      <div class="row">
-        <div class="col-xs-8">
-          <h2>Candidates</h2>
-        </div>
-        <div class="col-xs-4" align="right">
-          <input type="text" ng-model="searchCandidates" class="irs" placeholder="Filter candidates.."/>
-        </div>
-        <div class="col-xs-12">
 
-          <div class="irs overflow-table">
-
-            <table cellspacing="10" cellpadding="5">
-              <tr class="irs head">
-                <td class="irs candidate-idx padding-r">#</td>
-                <td class="irs candidate-actions">Actions</td>
-                <td class="irs candidate-label"><strong>Label</strong></td>
-                <td ng-repeat="parameter in Setup.file.content.content.candidates.parameters" class="irs candidate-data">
-                  {{ parameter }}
-                </td>
-                <td ng-repeat="parameter in Setup.file.content.content.candidates.parameters" class="irs candidate-data">
-                  {{ parameter }}
-                </td>
-              </tr>
-            </table>
-              <table cellspacing="10" cellpadding="5">
-                <tr ng-repeat="candidate in Setup.file.content.content.candidates.candidates | filter: searchCandidates">
-                  <td class="irs candidate-idx padding-r">{{ $index+1 }}</td>
-                  <td class="irs candidate-actions">
-                    <input type="checkbox" aria-label="Use candidate" ng-model="candidate.selected"></input>
-                    <a href="" ng-click="Setup.deleteCandidate($index);"><i class="fa fa-trash"></i></a>
-                  </td>
-                  <td  class="irs candidate-label"><input class="irs discreet candidate-label" type="text" ng-model="candidate.label" /></td>
-                  <td  class="irs candidate-data" ng-repeat="value in candidate.values">{{ value }}</td>
-                  <td  class="irs candidate-data" ng-repeat="value in candidate.values">{{ value }}</td>
-                </tr>
-              </table>
                 <div ng-if="(Setup.file.content.content.candidates.candidates | filter: searchCandidates).length == 0">No result found.</div>
+              </div>
+            </div>
+          </div>
+          <div class="row irs padding" ng-show="Setup.display.candidates">
+            <div class="col-sm-3 irs nopadding">
+              <button class="irs large" ng-click="Setup.allSelected = !Setup.allSelected; Setup.selectAll();">Select all</button>
+            </div>
+            <div class="col-sm-3 irs nopadding">
+              <button class="irs large" ng-click="Setup.file.content.content.candidates.candidates.unshift({});">New candidate</button>
+            </div>
+            <div class="col-sm-3 irs nopadding">
+              <button class="irs large">Import from file</button>
+            </div>
+            <div class="col-sm-3 irs nopadding">
+              <button class="irs large">Save file</button>
             </div>
           </div>
         </div>
-        <div class="row irs padding">
-          <div class="col-sm-3 irs nopadding">
-            <button class="irs large" ng-click="Setup.allSelected = !Setup.allSelected; Setup.selectAll();">Select all</button>
-          </div>
-          <div class="col-sm-3 irs nopadding">
-            <button class="irs large">New candidate</button>
-          </div>
-          <div class="col-sm-3 irs nopadding">
-            <button class="irs large">Import from file</button>
-          </div>
-          <div class="col-sm-3 irs nopadding">
-            <button class="irs large">Save file</button>
-          </div>
-        </div>
-
-        <!-- <pre>{{ file | json}}</pre> -->
       </div>
+        <div class="irs full-height padding history" ng-class="{'col-md-3': Setup.display.history, 'col-md-2': !Setup.display.history}">
+          <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.history, 'fa-angle-left': !Setup.display.history}" ng-click="Setup.display.history = !Setup.display.history"></i> <span ng-show="Setup.display.history">History</span></h2>
+
+          <div ng-show="Setup.display.history">
+            Logs for this file are empty.<br /><br />
+          <strong>[Today]</strong>
+          Lorem ipsum dolor sit amet, conseing elit, sed do eiusmod.
+          <br /><br />
+          <strong>[2 days ago]</strong> Ut enim ad minim exercitation ullamco.
+          <br /><br />
+          <strong>[1 month ago]</strong> Duisdolor in reprehenderit in voluptate.
+          <br /><br />
+          <strong>[1 year ago]</strong> Excepteur cupidatat non proident.
+        </div>
+        </div>
+      </div>
+
+
+      <!-- <pre>{{ file | json}}</pre> -->
+    </div>

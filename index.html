@@ -7,7 +7,6 @@
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="index.css">
 	<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-
 	<script src="assets/js/angular.min.js"></script>
 
 	<script src="app/index.js"></script>
@@ -48,8 +47,7 @@
 				</ul>
 
 				<div class="irs contents">
-					<div ng-repeat="file in FileManager.filesOpened" ng-show="file.active">
-						<div class="irs editor" ng-include="file.editor"></div>
+					<div ng-repeat="file in FileManager.filesOpened" class="irs full-height" ng-show="file.active" ng-include="file.editor">
 					</div>
 				</div>
 

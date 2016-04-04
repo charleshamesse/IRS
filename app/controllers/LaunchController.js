@@ -9,6 +9,7 @@ angular.module('app')
     "workDir": "",
     "irsDir": "irs-generated",
     "applicationSelected": false,
+    "parameterSelection": [],
     "command": {
       "prefix": "Rscript explore.R",   // Done: constant
       "parameter-file": "",            // from scenario, as JSON
@@ -64,6 +65,12 @@ angular.module('app')
 
         // 2. Check if file contains all required scenario features
         $scope.Launch.scenario = angular.fromJson(data);
+        $scope.Launch.scenario.content.candidates.parameters.forEach(function(p) {
+          $scope.Launch.parameterSelection.push({
+            "name": p,
+            "selected": true
+          })
+        });
 
         // 3. Fill object
         $scope.Launch.file.content.content.scenario_uri = path;

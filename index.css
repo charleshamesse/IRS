@@ -4,6 +4,7 @@ body {
 	margin: 0;
 	height: 100%;
 	width: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -11,9 +12,10 @@ body {
 	font-weight: 300;
 }
 
-:focus {
-  outline-color: transparent;
-  outline-style: none;
+:focus, .btn:focus, :active {
+	outline: 0 !important;
+  outline-color: transparent !important;
+  outline-style: none !important;
 }
 
 ::-webkit-scrollbar {
@@ -58,9 +60,9 @@ h3 {
 	overflow-x: auto;
 }
 .irs.center-panel {
-	max-height: 100%;
-	overflow-x: auto;
 	padding:0;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 .irs.full-height {
@@ -74,13 +76,26 @@ h3 {
 	padding: 0;
 }
 .irs.padding {
-	padding: 15px;
+	padding: 15px !important;
+}
+.irs.center-padding-wrapper {
+	padding: 15px 0 15px 0px;
 }
 
-.irs.editor {
+.irs.contents {
+	height: calc(100% - 30px);
 	overflow-y: auto;
-	overflow-x: auto;
-	height:auto;
+}
+.grid-right-panel {
+	margin: 0;
+}
+.grid-right-panel .col-md-1 {
+	width: 97%;
+}
+.grid-right-panel .col-md-2 {
+	width: 3%;
+	padding: 15px 0 0 0 !important;
+	text-align: center;
 }
 
 .irs.tabs {
@@ -177,14 +192,14 @@ input.irs, select.irs {
 	padding: 0 0 0 5px;
 }
 
-button.irs {
+button.irs:not(.tag):not(.close-tab)  {
 	border: none;
 	margin: 0;
 	padding: 0;
 	height: 36px;
 	line-height: 36px;
 }
-button.irs:not(.close):hover {
+button.irs:not(.close):not(.tag):not(.close-tab):hover {
 	background-color: rgb(170, 170, 170);
 	color: #000;
 }
@@ -224,13 +239,20 @@ td.irs.parameter-idx {
 td.irs.parameter-data {
 	width: 19%;
 }
+td.irs.parameter-type {
+	width: 15%;
+}
+td.irs.parameter-conditions {
+	width: 23%;
+}
 td.irs.candidate-idx {
 	width: 30px;
 	text-align: right;
 }
 td.irs.candidate-actions {
-	width: 80px;
-	min-width: 100px;
+	width: 60px;
+	min-width: 60px;
+	text-align: center;
 }
 td.irs.candidate-label {
 	width: 300px;
@@ -265,15 +287,50 @@ table tr td:last-child {
 	max-height: 200px;
 	overflow-y: auto;
 }
-input.irs.discreet {
+input.irs.discreet, select.irs.discreet {
 	background: none;
 	padding: 0;
 	margin: 0;
 	width: 100%;
 }
+.irs.border-right {
+	border-right: 1px solid #eee;
+}
+strong {
+	color: #555;
+}
+h2 i.fa {
+	font-size: 13px;
+	margin-bottom: 6px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.top{
+    background: yellow;
+    height: 100px;
+    overflow-x: auto;
+}
+.bottom{
+    background: red;
+    height: 100px;
+    overflow-x: auto;
+}
+.content{
+    width: 300%;
+    height: 100%;
+}
+.irs.tag {
+	background-color: #f5f5f5;
+	margin: 0 5px 5px 0;
+}
+.irs.tag:active {
+	background-color: #f2f2f2;
+  box-shadow:none;
+}
+.irs.tag:focus {
+	border-color: rgb(204, 204, 204);
+}
 .irs.history {
-	border-left: 1px solid #eee;
-	height: 100%;
-	overflow-y: auto;
-	min-height: 100%;
+	background-color: rgb(250, 250, 250);
 }
