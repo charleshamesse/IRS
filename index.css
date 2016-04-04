@@ -223,7 +223,6 @@ button.irs:not(.close):not(.tag):not(.close-tab):hover {
 
 .irs.candidate {
 	height: 30px;
-	line-height: 30px;
 }
 .irs.candidate-cb {
 	width: 20px;
@@ -246,20 +245,19 @@ td.irs.parameter-conditions {
 	width: 23%;
 }
 td.irs.candidate-idx {
-	width: 30px;
+	min-width: 30px;
 	text-align: right;
 }
 td.irs.candidate-actions {
-	width: 60px;
 	min-width: 60px;
 	text-align: center;
 }
 td.irs.candidate-label {
 	width: 300px;
 	min-width: 300px;
+	min-height: 30px;
 }
 td.irs.candidate-data {
-	width: 100px;
 	min-width: 100px;
 }
 .padding-r {
@@ -323,6 +321,7 @@ h2 i.fa {
 .irs.tag {
 	background-color: #f5f5f5;
 	margin: 0 5px 5px 0;
+	padding-bottom: 7px;
 }
 .irs.tag:active {
 	background-color: #f2f2f2;

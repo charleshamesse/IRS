@@ -7,11 +7,14 @@
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="index.css">
 	<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+
 	<script src="assets/js/angular.min.js"></script>
+	<script src="assets/js/angular-sanitize.js"></script>
 
 	<script src="app/index.js"></script>
 	<script src="app/factories/d3.js"></script>
 	<script src="app/services/ResultParser.js"></script>
+	<script src="app/services/Explorer.js"></script>
 	<script src="app/services/FileWriter.js"></script>
 	<script src="app/controllers/IndexController.js"></script>
 	<script src="app/controllers/SetupController.js"></script>
@@ -40,15 +43,18 @@
 			<!-- Main panel -->
 			<div class="col-sm-10 irs center-panel full-height nopadding">
 
+				<!-- Tabs -->
 				<ul class="irs tabs">
 					<li ng-repeat="file in FileManager.filesOpened" class="irs tab" ng-click="FileManager.activateFile(file); alert('c')" ng-class="{active: file.active}">
-						{{file.name}} <button class="close irs close-tab" type="button" >×</button>
+						{{file.name}} <button class="close irs close-tab" type="button" ng-click="FileManager.close($index);">×</button>
 					</li>
 				</ul>
 
+				<!-- Contents -->
 				<div class="irs contents">
 					<div ng-repeat="file in FileManager.filesOpened" class="irs full-height" ng-show="file.active" ng-include="file.editor">
 					</div>
+					<div ng-show="FileManager.filesOpened.length == 0" ng-include="'templates/home.html'"></div>
 				</div>
 
 	</div>

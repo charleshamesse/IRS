@@ -200,7 +200,7 @@ angular.module('app')
         // set up variables
         var width, height, max;
         width = d3.select(iElement[0])[0][0].offsetWidth;
-        height = scope.data.length * 40;
+        height = 600;
         max = 100;
         svg.attr('height', height);
 
@@ -215,7 +215,7 @@ angular.module('app')
         MARGINS = {
           top: 50,
           right: 50,
-          bottom: 50,
+          bottom: 250,
           left: 50
         },
         yScale = d3.scale.linear().range([height - MARGINS.top, MARGINS.bottom])
@@ -234,10 +234,15 @@ angular.module('app')
         svg.append("svg:g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height - MARGINS.bottom) + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
         svg.append("svg:g")
         .attr("class", "y axis")
-        .attr("transform", "translate(" + (MARGINS.left) + ",0)")
+        .attr("transform", "translate(" + (MARGINS.left) + "," + (MARGINS.top-MARGINS.bottom) +")")
         .call(yAxis);
 
         var irsBlue = 'rgb(82, 154, 189)';
@@ -245,14 +250,14 @@ angular.module('app')
         // Grid
         svg.append("g")
         .attr("class", "grid")
-        .attr("transform", "translate(0," + (height-MARGINS.top) + ")")
+        .attr("transform", "translate(0," + (height-MARGINS.bottom) + ")")
         .call(xAxis
           .tickSize(-(height-MARGINS.top-MARGINS.bottom), 0, 0)
           .tickFormat(""));
 
           svg.append("g")
           .attr("class", "grid")
-          .attr("transform", "translate(" + MARGINS.left +",0)")
+          .attr("transform", "translate(" + MARGINS.left +"," + (MARGINS.top-MARGINS.bottom) +")")
           .call(yAxis
             .tickSize(-(width-MARGINS.left-MARGINS.right), 0, 0)
             .tickFormat(""));
@@ -269,7 +274,8 @@ angular.module('app')
             .attr('d', lineGen(data))
             .attr('stroke', irsBlue)
             .attr('stroke-width', 1)
-            .attr('fill', 'none');
+            .attr('fill', 'none')
+            .attr("transform", "translate(0," + (MARGINS.top-MARGINS.bottom) +")");
 
             svg.selectAll(".point")
             .data(data)
@@ -279,6 +285,7 @@ angular.module('app')
             .attr("cx", function(d, i) { return xScale(d.x) })
             .attr("cy", function(d, i) { return yScale(d.y) })
             .attr("r", function(d, i) { return 3 })
+            .attr("transform", "translate(0," + (MARGINS.top-MARGINS.bottom) +")")
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut);
 
@@ -289,10 +296,11 @@ angular.module('app')
               });
 
               var text = svg.append("text").attr({
-                id: "t-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+                id: "t-" + parseInt(d.y) + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
                 x: function() { return xScale(d.x) + 15; },
                 y: function() { return yScale(d.y) - 15; }
-            });
+            })
+            .attr("transform", "translate(0," + (MARGINS.top-MARGINS.bottom) +")");
 
             text.append("svg:tspan").style("fill", irsBlue).text("Performance: ");
             text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text(d.y);
@@ -310,7 +318,7 @@ angular.module('app')
             d3.select(this).attr({  r: 3 });
 
             // Select text by id and then remove
-            d3.select("#t-" + d.y + "-" + i).remove();  // Remove text location
+            d3.select("#t-" + parseInt(d.y) + "-" + i).remove();  // Remove text location
           }
 
           };

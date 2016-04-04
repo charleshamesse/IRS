@@ -29,17 +29,9 @@
       <br />
       You will be able to provide additional settings after selecting an application.
       <div class="irs form-inline-box">
-        <div class="irs form-inline" align="right">
-          Write report {{ Launch.test }} in new file:&nbsp;&nbsp;
-        </div>
         <div class="irs form-inline">
-          <input type="checkbox" class="md-secondary" aria-label="Generate new file" ng-model="Launch.generateNewFile"></input>
-        </div>
-        <div class="irs form-inline" align="right">
-          Number of cores:&nbsp;&nbsp;
-        </div>
-        <div class="irs form-inline">
-          <input type="text" class="irs nomargin" ng-model="Launch.command.parallel" />
+          Number of CPU cores to use: &nbsp;
+          <input type="text" size="4" class="irs nomargin" ng-model="Launch.command.parallel" />
         </div>
       </div>
     </div>
@@ -48,110 +40,89 @@
 
   <!-- Second section -->
   <div class="row" ng-show="Launch.applicationSelected">
-    <div class="col-sm-12" ng-show="Launch.command.type=='irace'">
-      <h2>Irace: advanced settings</h2>
+    <div class="col-sm-12">
       <div class="row">
+        <!-- Candidates -->
+        <div class="col-sm-12">
+          <div class="row">
         <div class="col-sm-6">
-          Select the first candidate:
-        </div>
-        <div class="col-sm-6">
-          Parameters:
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-12" ng-show="Launch.command.type=='ablation'">
-      <h2>Ablation: advanced settings</h2>
-    </div>
-    <div class="col-sm-12" ng-show="Launch.command.type=='full'">
-      <div class="row">
-        <div class="col-sm-6">
-          <h2>Candidates</h2>
-          <div class="irs list">
-            <div ng-repeat="c in Launch.scenario.content.candidates.candidates">{{ c.label }}</div>
+          <h2>Initial candidate<span ng-show="Launch.command.type!='full'">s</span></h2>
+          </div>
+          <div class="col-sm-6" align="right">
+            <input type="text" ng-model="searchCandidates" class="irs" placeholder="Filter candidates.."/>
           </div>
         </div>
-        <div class="col-sm-6">
+        <span ng-show="Launch.command.type=='full'">Choose 1 candidate amongst the following:</span>
+        <span ng-show="Launch.command.type=='ablation'">Choose 2 candidates amongst the following:</span>
+        <span ng-show="Launch.command.type=='irace'">Choose any number of candidates amongst the following:</span>
+        <div class="spacer"></div>
+          <div class="irs overflow-table" style="min-width: 100%">
+            <table cellspacing="10" cellpadding="5" style="min-width: 100%">
+              <tr class="irs head">
+                <td class="irs candidate-idx padding-r">#</td>
+                <td class="irs candidate-actions">Use</td>
+                <td class="irs candidate-label"><strong>Label</strong></td>
+                <td ng-repeat="parameter in Launch.scenario.content.candidates.parameters track by $index" class="irs candidate-data">
+                  {{ parameter }}
+                </td>
+              </tr>
+            </table>
+            <table cellspacing="10" cellpadding="5" style="min-width: 100%">
+              <tr ng-repeat="candidate in Launch.scenario.content.candidates.candidates | filter: searchCandidates" class="irs candidate">
+                <td class="irs candidate-idx padding-r">{{ $index+1 }}</td>
+                <td class="irs candidate-actions">
+                  <input ng-show="Launch.command.type=='full'" type="radio" ng-model="Launch.selectedCandidate" value="{{ $index }}"></input>
+                  <input ng-show="Launch.command.type!='full'" type="checkbox" ng-model="candidate.selected" value="{{ $index }}"></input>
+                </td>
+                <td  class="irs candidate-label">{{ candidate.label }}</td>
+                <td  class="irs candidate-data" ng-repeat="parameter in Launch.scenario.content.candidates.parameters track by $index"> {{ candidate.values[$index] }}</td>
+              </tr>
+            </table>
+            <div ng-if="(Setup.file.content.content.candidates.candidates | filter: searchCandidates).length == 0">No result found.</div>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="col-sm-12">
           <div class="row">
             <div class="col-sm-6">
-          <h2>Parameters</h2>
-        </div>
-        <div class="col-sm-6" align="right">
-            <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
+              <h2>Parameter selection</h2>
+            </div>
+            <div class="col-sm-6" align="right">
+              <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
+            </div>
           </div>
-        </div>
           <div class="spacer small"></div>
 
           <div class="overflow-tbody">
-          <button
+            <button
             ng-click="p.selected = !p.selected;"
             ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
             type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
-          </button>
-          <button
-            ng-click="p.selected = !p.selected;"
-            ng-repeat="p in Launch.parameterSelection | filter:searchParameters"
-            type="button" class="btn btn-default irs tag">
-              <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> {{ p.name }}
+            <input type="checkbox" aria-label="Use candidate" ng-model="p.selected"></input> {{ p.name }}
+            <!-- <i class="fa" ng-class="{'fa-circle': p.selected, 'fa-circle-thin': !p.selected}"></i> -->
           </button>
         </div>
-          <div class="spacer small"></div>
-        </div>
-        </div>
+        <div class="spacer small"></div>
       </div>
     </div>
-    <div class="spacer"></div>
-    <div class="row" ng-show="Launch.applicationSelected">
-      <div class="col-sm-12">
-        <button class="irs large" ng-click="Launch.launchExploration();">Launch</button>
-      </div>
-    </div>
-    <div class="spacer"></div>
-
-    <!-- JSON preview -->
-    <div ng-show="Launch.isLaunched">
-    Command preview:
-    <pre>{{ Launch.command.preview | json }}</pre>
-    Output:
-    <pre>{{ Launch.result | json }}</pre>
   </div>
-    <!-- <pre>{{ file | json}}</pre> -->
-
-    <!-- Results -->
+</div>
+<div class="spacer"></div>
+<div class="row" ng-show="Launch.applicationSelected">
+  <div class="col-sm-12">
+    <button class="irs large" ng-click="Launch.launchExploration();">Launch</button>
   </div>
+</div>
+<div class="spacer"></div>
+
+<!-- JSON preview -->
+<div ng-show="Launch.isLaunched" ng-bind-html="Launch.result">
+</div>
+<!-- <pre>{{ file | json}}</pre> -->
+
+<!-- Results -->
+</div>

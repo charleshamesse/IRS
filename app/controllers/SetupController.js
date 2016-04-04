@@ -45,33 +45,66 @@ angular.module('app')
     fs.readFile(path, 'utf8', function(err, data) {
       if (err) dialog.showMessageBox('Error', 'Unable to open file: ' + path + '\n' + err);
       else {
-        data = angular.fromJson(data);
-
-        // Get the parameters
-        $scope.Setup.file.content.content.candidates.candidates_parameters = data.parameters;
-        var i = $scope.Setup.file.content.content.candidates.candidates.length | 0;
-        var count = 0;
-
-        // For each candidate, format it and add it to the list
-        data.candidates.forEach(function(candidate) {
-          $scope.Setup.file.content.content.candidates.candidates[i] = {
-            'label': candidate.label,
-            'values': candidate.values,
-            'develop': false,
-            'info': 'Candidate source'
-          };
-          i++;
-          count++;
+        // Parse candidate file
+        var lines = data.trim().split('\n'),
+            count = 0,
+            parameters = [],
+            candidates = [],
+            values = [];
+        lines.forEach(function(l) {
+          if(l[0] != '#' && l != "") {
+            // Parameter list
+            if(count == 0) {
+              parameters = l.match(/\S+/g);
+              ++count;
+            }
+            else {
+              candidates.push({
+                'label': "Candidate " + count,
+                'values': l.match(/\S+/g),
+                'develop': false,
+                'info': 'Source: "' + path + '".'
+              });
+              ++count;
+            }
+          }
         });
+        console.log(candidates);
+        console.log(parameters);
+        $scope.Setup.file.content.content.candidates.parameters = parameters;
+        $scope.Setup.file.content.content.candidates.candidates = $scope.Setup.file.content.content.candidates.candidates.concat(candidates);
 
-        // Add history record
-        $scope.Setup.history.push({
-          'action': 'Imported ' + (count) + ' candidates',
-          'detail': '',
-          'date': new Date()
-        });
 
-        $scope.$apply();
+        // If .ir
+        if(false) {
+          data = angular.fromJson(data);
+
+          // Get the parameters
+          $scope.Setup.file.content.content.candidates.candidates_parameters = data.parameters;
+          var i = $scope.Setup.file.content.content.candidates.candidates.length | 0;
+          var count = 0;
+
+          // For each candidate, format it and add it to the list
+          data.candidates.forEach(function(candidate) {
+            $scope.Setup.file.content.content.candidates.candidates[i] = {
+              'label': candidate.label,
+              'values': candidate.values,
+              'develop': false,
+              'info': 'Candidate source'
+            };
+            i++;
+            count++;
+          });
+
+          // Add history record
+          $scope.Setup.history.push({
+            'action': 'Imported ' + (count) + ' candidates',
+            'detail': '',
+            'date': new Date()
+          });
+
+          $scope.$apply();
+        }
       }
     });
   }

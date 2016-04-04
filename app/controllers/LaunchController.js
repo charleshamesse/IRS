@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('LaunchController', function($scope, FileWriter, ResultParser) {
+.controller('LaunchController', function($scope, $filter, $timeout, FileWriter, Explorer, ResultParser) {
   // Globals
   $scope.Launch = {
     "isLaunched": false,
@@ -29,15 +29,14 @@ angular.module('app')
   $scope.Launch.makeCommand = function() {
     var irsDir = $scope.Launch.workDir + $scope.Launch.irsDir + "/";
     $scope.Launch.command.preview = $scope.Launch.command.prefix + " "
-      + " --parameter-file " + irsDir + "parameters.txt"
-      + " --sel-parameter-file " + irsDir + "selection.txt"
-      + " --candidates-file " + irsDir + "candidates.txt"
-      + " --log-file " + irsDir + "irs-log"
-      + " --instance-file " + $scope.Launch.scenario.content.instances.testing_uri
-      + " --hook-run " + $scope.Launch.scenario.content.hookrun_uri
-      + " --parallel " + $scope.Launch.command.parallel
-      + " --type " + $scope.Launch.command.type
-    console.log($scope.Launch.command.preview);
+    + " --parameter-file " + irsDir + "parameters.txt"
+    + " --sel-parameter-file " + irsDir + "selection.txt"
+    + " --candidates-file " + irsDir + "candidates.txt"
+    + " --log-file " + irsDir + "irs-log"
+    + " --instance-file " + $scope.Launch.scenario.content.instances.testing_uri
+    + " --hook-run " + $scope.Launch.scenario.content.hookrun_uri
+    + " --parallel " + $scope.Launch.command.parallel
+    + " --type " + $scope.Launch.command.type;
   }
 
   // Dependencies
@@ -59,7 +58,7 @@ angular.module('app')
         // 1. Check if file is .ir
         var ext = path.split(".").pop();
         if(ext != "ir") {
-          $mdToast.show($mdToast.simple({position: 'bottom'}).content('This is not a valid scenario file.'));
+          alert('This is not a valid scenario file.');
           return 0;
         }
 
@@ -88,48 +87,55 @@ angular.module('app')
     // Globals and dependencies
     var exec = require('child_process').exec;
 
+    // Check candidate number
+    /*
+    FE	1 candidate
+    n parameters
+    A	2 candidates
+    n parameters
+    I	n candidates
+    n parameters
+    */
     // Generate text file
-    var resourcesDir = $scope.Launch.workDir + "irs-generated/";
+    var resourcesDir = $scope.Launch.workDir + "irs-generated/",
+    parameterSelection = $filter('filter')($scope.Launch.parameterSelection, {selected: true}, true);
     FileWriter.makeResourcesDir(resourcesDir);
-    FileWriter.writeParameterFile(resourcesDir + "/parameters.txt", {});
-    FileWriter.writeSelectionFile(resourcesDir + "selection.txt", ["algorithm", "localsearch"]);
+    FileWriter.writeParameterFile(resourcesDir + "parameters.txt", $scope.Launch.scenario.content.parameters);
+    FileWriter.writeSelectionFile(resourcesDir + "selection.txt", parameterSelection);
     FileWriter.writeCandidatesFile(resourcesDir + "candidates.txt", $scope.Launch.scenario.content.candidates);
 
 
     // Preview command
     $scope.Launch.makeCommand();
+    Explorer.launch($scope.Launch.command);
 
-    // Treat each case
-    switch($scope.Launch.command.type) {
-      case 'ablation':
-      break;
-      case 'full':
-      break;
-      case 'irace':
-      break;
-    }
+    // Extend the string prototype - refactor
+    String.prototype.beginsWith = function (string) {
+      return(this.indexOf(string) === 0);
+    };
 
-    // Execute command
-    exec('pwd', function(error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-        return 0;
-      }
+    var updateResult = function(){
+      var temp = Explorer.output(),
+          lines = temp.split('\n'),
+          output = "";
+      lines.forEach(function(l) {
+        if(l.beginsWith('#')) {
+          l = '<span class="text-muted">' + l + '</span>';
+        }
+        else if(l.beginsWith('Warning') || l.beginsWith('WARNING')) {
+          l = '<span class="text-warning">' + l + '</span>';
+        }
+        output += l + '\n';
+      });
 
-      // Mocking up the data
-      stdout = `Initial 16663
-localsearch=3,nnls=40,dlb=1 13390
-alpha=1 5402.33333333333
-beta=2 12242
-algorithm=mmas 12263.6666666667
-rho=0.2 3464.66666666667
-ants=25 13753.3333333333`;
-
-      // Display output
-      $scope.Launch.result = ResultParser.parseFullExploration(stdout);
-      $scope.Launch.isLaunched = true;
+      $scope.Launch.result = output.replace(/(?:\r\n|\r|\n)/g, '<br>');;
       $scope.$apply();
-    });
+    };
+
+    Explorer.registerObserverCallback(updateResult);
+
+    // ResultParser.parseFullExploration(stdout2);
+    $scope.Launch.isLaunched = true;
 
 
   }
