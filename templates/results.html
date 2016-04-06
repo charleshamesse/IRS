@@ -1,21 +1,55 @@
+<script src="assets/js/svgtopng.js"></script>
 <div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file">
   <div class="row">
-    <div class="col-sm-12">
-      <h2>Exploration results</h2>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    <div class="col-sm-9 col-xs-6">
+      <h2><input ng-model="Results.file.content.content.text.title" class="irs h2" type="text" placeholder="Insert title here.."></h2>
+    </div>
+    <div class="col-sm-3 col-xs-6">
+      <button class="irs large" ng-click="Results.exportToLatex();">Export to LaTeX</button>
+      <button class="irs large" ng-click="Results.printSVGData();">Export SVG</button>
     </div>
     <div class="col-sm-12">
-      Ordinal plot:
-      <d3-ordinal-line data="d3Data" label="name"></d3-bars>
+      <input ng-model="Results.file.content.content.text.author"  class="irs discreet" placeholder="Insert author names here.."></textarea>
     </div>
     <div class="col-sm-12">
-      Line plot:
-      <d3-line data="d3Data2" label="name2"></d3-bars>
+      <textarea ng-model="Results.file.content.content.text.abstract" rows="2" cols="50"  class="irs comment" placeholder="Insert abstract here.."></textarea>
     </div>
     <div class="col-sm-12">
-      <pre>{{ Results.parse | json}}</pre>
-      <pre>{{ file | json}}</pre>
+      <h2>Results</h2>
     </div>
+    <div class="col-sm-12">
+      <h3>Line plot</h3>
+      <d3-ordinal-line data="d3Data" id="linePlot" label="name"></d3-bars>
+    </div>
+    <div class="col-sm-12">
+    <textarea ng-model="Results.file.content.content.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
+    </div>
+    <div class="col-sm-12">
+      <h3>Tree</h3>
+      <div style="overflow-x: auto;">
+      <d3-horizontal-tree data="d3TreeData" id="treePlot" label="name"></d3-bars>
+      </div>
+    </div>
+    <div class="col-sm-12">
+    <textarea ng-model="Results.file.content.content.text.secondGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
+    </div>
+    <div class="col-sm-12">
+      <h3>Raw terminal output</h3>
+    <pre>{{ Results.file.content.content.stdout | json}}</pre>
+      <h3>Command executed</h3>
+    <pre>Rscript explore.R --parameter-file example/parameters-acotsp.txt --sel-param-file example/selection.txt --candidates-file example/acotsp-parameters-default.txt --instance-file example/instances.txt --hook-run example/hook-run-rand --parallel 1 --type full --log-file test.txt</pre>
+    </div>
+    <div class="col-sm-12">
+      <h2>Scenario</h2>
+    </div>
+    <div class="col-sm-12">
+      <input type="checkbox" ng-model="Results.text.exportParameters"> Export parameters</input><br />
+      <input  type="checkbox" ng-model="Results.text.exportParameterSelection"> Export parameter selection</input><br />
+      <input  type="checkbox" ng-model="Results.text.exportCandidates"> Export candidates</input><br />
+    </div>
+    <div class="col-sm-12">
+        <pre>{{ Results.latexContent }}</pre>
+    </div>
+
 </div>
 </div>

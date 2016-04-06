@@ -81,6 +81,7 @@ angular.module('app')
     if((currentFile = $filter('filter')(FileManager.filesOpened, {active: true}, true)[0]) == null) {
       return 0;
     }
+    console.log(currentFile);
     fs.writeFile(currentFile.path, JSON.stringify(currentFile.content), 'utf8', (err) => {
       if (err) throw err;
     });

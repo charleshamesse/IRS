@@ -215,7 +215,7 @@ angular.module('app')
         MARGINS = {
           top: 50,
           right: 50,
-          bottom: 250,
+          bottom: 200,
           left: 50
         },
         yScale = d3.scale.linear().range([height - MARGINS.top, MARGINS.bottom])
@@ -236,10 +236,10 @@ angular.module('app')
         .attr("transform", "translate(0," + (height - MARGINS.bottom) + ")")
         .call(xAxis)
         .selectAll("text")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-65)" );
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)" );
         svg.append("svg:g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + (MARGINS.left) + "," + (MARGINS.top-MARGINS.bottom) +")")
@@ -299,28 +299,201 @@ angular.module('app')
                 id: "t-" + parseInt(d.y) + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
                 x: function() { return xScale(d.x) + 15; },
                 y: function() { return yScale(d.y) - 15; }
-            })
-            .attr("transform", "translate(0," + (MARGINS.top-MARGINS.bottom) +")");
+              })
+              .attr("transform", "translate(0," + (MARGINS.top-MARGINS.bottom) +")");
 
-            text.append("svg:tspan").style("fill", irsBlue).text("Performance: ");
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text(d.y);
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", irsBlue).text("Parameters:");
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P1");
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P2");
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P3");
-            text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P4");
+              text.append("svg:tspan").style("fill", irsBlue).text("Performance: ");
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text(d.y);
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", irsBlue).text("Parameters:");
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P1");
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P2");
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P3");
+              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P4");
 
 
             }
 
             function handleMouseOut(d, i) {
-            // Use D3 to select element, change color back to normal
-            d3.select(this).attr({  r: 3 });
+              // Use D3 to select element, change color back to normal
+              d3.select(this).attr({  r: 3 });
 
-            // Select text by id and then remove
-            d3.select("#t-" + parseInt(d.y) + "-" + i).remove();  // Remove text location
-          }
+              // Select text by id and then remove
+              d3.select("#t-" + parseInt(d.y) + "-" + i).remove();  // Remove text location
+            }
 
+          };
+        }
+      };
+    }])
+    .directive('d3HorizontalTree', ['d3', function(d3) {
+      return {
+        restrict: 'EA',
+        scope: {
+          data: "=",
+          label: "@",
+        },
+        link: function(scope, iElement, iAttrs) {
+          // create the svg to contain our visualization
+          var svg = d3.select(iElement[0])
+          .append("svg")
+          .attr("width", "100%");
+
+          // make the visualization responsive by watching for changes in window size
+          window.onresize = function() {
+            return scope.$apply();
+          };
+          scope.$watch(function() {
+            return angular.element(window)[0].innerWidth;
+          }, function() {
+            var newDataCopy = JSON.parse(JSON.stringify(scope.data));
+            return scope.render(newDataCopy);
+          });
+
+          // watch the data source for changes to dynamically update the visualization
+          scope.$watch('data', function(newData, oldData) {
+            var newDataCopy = JSON.parse(JSON.stringify(newData));
+            return scope.render(newDataCopy);
+          }, true);
+
+
+          scope.render = function(data) {
+            // clear out everything in the svg to render a fresh version
+            svg.selectAll("*").remove();
+
+            // set up variables
+            var width, height, max;
+            width = 230*5;  //d3.select(iElement[0])[0][0].offsetWidth;
+            height = 500;
+            svg.attr('height', height);
+            svg.attr('width', width);
+
+            // Data management
+            var treeData = data;
+
+            // ************** Generate the tree diagram	 *****************
+            var margin = {top: 0, right: 120, bottom: 0, left: 120},
+            width = 230*8 - margin.right - margin.left, //groups.length
+            height = 500 - margin.top - margin.bottom;
+
+            var i = 0,
+            duration = 750,
+            root;
+
+            var tree = d3.layout.tree()
+            .size([height, width]);
+
+            var xOffset = 30;
+            var diagonal = d3.svg.diagonal()
+            .projection(function(d) { return [d.y, d.x]; });
+
+            root = treeData[0];
+            root.x0 = height / 2;
+            root.y0 = 100;
+
+            update(root);
+
+
+            function update(source) {
+
+              // Compute the new tree layout.
+              var nodes = tree.nodes(root).reverse(),
+              links = tree.links(nodes);
+
+              // Normalize for fixed-depth.
+              nodes.forEach(function(d) { d.y = d.depth * 180 + xOffset; });
+
+              // Update the nodes…
+              var node = svg.selectAll("g.node")
+              .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+              // Enter any new nodes at the parent's previous position.
+              var nodeEnter = node.enter().append("g")
+              .attr("class", "node")
+              .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+              .on("click", click);
+
+              nodeEnter.append("circle")
+              .attr("r", function(d) { return  "20px" })
+              .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+              nodeEnter.append("text")
+              .attr("x", function(d) { return 0; //d.children || d._children ? -13 : 13;
+              })
+              .attr("dy", function(d) { return  -(d.score/30000*20+3) + "px" })//".35em")
+              .attr("text-anchor", function(d) {
+                return "middle"; //return d.children || d._children ? "end" : "start";
+              })
+              .text(function(d) { return d.name; })
+              .style("fill-opacity", 1e-6);
+
+              // Transition nodes to their new position.
+              var nodeUpdate = node.transition()
+              .duration(duration)
+              .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+              nodeUpdate.select("circle")
+              .attr("r", function(d) { return  (d.score/30000*20) + "px" })
+              .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+              nodeUpdate.select("text")
+              .style("fill-opacity", 1);
+
+              // Transition exiting nodes to the parent's new position.
+              var nodeExit = node.exit().transition()
+              .duration(duration)
+              .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+              .remove();
+
+              nodeExit.select("circle")
+              .attr("r", "20px");
+
+              nodeExit.select("text")
+              .style("fill-opacity", 1e-6);
+
+              // Update the links…
+              var link = svg.selectAll("path.link")
+              .data(links, function(d) { return d.target.id; });
+
+              // Enter any new links at the parent's previous position.
+              link.enter().insert("path", "g")
+              .attr("class", "link")
+              .attr("d", function(d) {
+                var o = {x: source.x0, y: source.y0};
+                return diagonal({source: o, target: o});
+              });
+
+              // Transition links to their new position.
+              link.transition()
+              .duration(duration)
+              .attr("d", diagonal);
+
+              // Transition exiting nodes to the parent's new position.
+              link.exit().transition()
+              .duration(duration)
+              .attr("d", function(d) {
+                var o = {x: source.x, y: source.y};
+                return diagonal({source: o, target: o});
+              })
+              .remove();
+
+              // Stash the old positions for transition.
+              nodes.forEach(function(d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+              });
+            }
+
+            // Toggle children on click.
+            function click(d) {
+              if (d.children) {
+                d._children = d.children;
+                d.children = null;
+              } else {
+                d.children = d._children;
+                d._children = null;
+              }
+              update(d);
+            }
           };
         }
       };

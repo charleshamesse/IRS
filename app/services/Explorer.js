@@ -5,13 +5,12 @@ angular.module('app')
 
   // Globals and dependencies
   var fs = require('fs'),
-  cp = require('child_process'),
-  Explorer = {
-    "terminalOutput": "",
-    "exitCode": ""
-  };
-
-  var observerCallback;
+      cp = require('child_process'),
+      Explorer = {
+        "terminalOutput": "",
+        "exitCode": ""
+      },
+      observerCallback;
 
   // Register observer
   this.registerObserverCallback = function(callback){
