@@ -7,6 +7,7 @@ angular.module('app')
   var path = require("path");
   var remote = require('remote');
   var dialog = remote.require('dialog');
+  var options = {filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
 
   // List of open files
   FileManager.filesOpened = [];
@@ -21,6 +22,7 @@ angular.module('app')
 
   // Open a file
   FileManager.openFile = function(file) {
+    console.log(file);
     // If file is already open
     if(file.isOpened) {
       FileManager.activateFile(file);

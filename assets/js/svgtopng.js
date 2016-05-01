@@ -140,5 +140,3 @@ svgtopng.getCanvasImg = function(SVGid) {
 
   return dataURL; //.replace(/^data:image\/(png|jpg);base64,/, "");
 };
-
-svgtopng.hello = "hehh";

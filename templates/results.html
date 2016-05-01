@@ -2,14 +2,19 @@
 <div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file">
   <div class="row">
     <div class="col-sm-9 col-xs-6">
-      <h2><input ng-model="Results.file.content.content.text.title" class="irs h2" type="text" placeholder="Insert title here.."></h2>
+        <div style="white-space:nowrap">
+          <label  for="Title"><h2>Title:</h2></label>
+          <input id="Title" ng-model="Results.file.content.content.text.title" class="irs h2" type="text" placeholder="Insert title here..">
+        </div>
     </div>
     <div class="col-sm-3 col-xs-6">
       <button class="irs large" ng-click="Results.exportToLatex();">Export to LaTeX</button>
-      <button class="irs large" ng-click="Results.printSVGData();">Export SVG</button>
     </div>
     <div class="col-sm-12">
-      <input ng-model="Results.file.content.content.text.author"  class="irs discreet" placeholder="Insert author names here.."></textarea>
+      <div style="white-space:nowrap">
+        <label for="Title">Author:</label>
+        <input ng-model="Results.file.content.content.text.author"  class="irs discreet" placeholder="Insert author names here.."></textarea>
+      </div>
     </div>
     <div class="col-sm-12">
       <textarea ng-model="Results.file.content.content.text.abstract" rows="2" cols="50"  class="irs comment" placeholder="Insert abstract here.."></textarea>

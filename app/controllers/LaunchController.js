@@ -9,6 +9,7 @@ angular.module('app')
     "workDir": "",
     "irsDir": "irs-generated",
     "applicationSelected": false,
+    "scenarioLoaded": false,
     "parameterSelection": [],
     "command": {
       "prefix": "Rscript explore.R",   // Done: constant
@@ -76,6 +77,7 @@ angular.module('app')
         $scope.Launch.scenario_uri = path;
 
         // 4. Apply
+        $scope.Launch.scenarioLoaded = true;
         $scope.$apply();
       }
     });

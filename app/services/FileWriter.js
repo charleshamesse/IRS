@@ -113,7 +113,7 @@ And the initial candidates:\\\\
 \\section{Results}
 \\begin{figure}[H]
 \\centering
-\\includegraphics[width=1.4\\linewidth]{` + relativePath + `` + plots[0] + `}
+\\includegraphics[width=\\linewidth]{` + relativePath + `` + plots[0] + `}
 \\end{figure}` + text.firstGraph + `\\begin{figure}[H]
 \\centering
 \\includegraphics[width=\\linewidth]{` + relativePath + `` + plots[1] + `}

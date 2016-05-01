@@ -16,7 +16,7 @@
               <input class="irs large" type="text" ng-model="file.content.content.instances.training_uri" placeholder="Training instances" />
             </div>
             <div class="irs form-inline">
-              <button class="irs large">Import</button>
+              <button class="irs large" ng-click="Setup.openInstances(0);">Import</button>
             </div>
           </div>
 
@@ -27,7 +27,7 @@
               <input class="irs large" type="text" ng-model="file.content.content.instances.testing_uri" placeholder="Testing instances" />
             </div>
             <div class="irs form-inline">
-              <button class="irs large">Import</button>
+              <button class="irs large" ng-click="Setup.openInstances(1);">Import</button>
             </div>
           </div>
         </div>
@@ -39,17 +39,20 @@
               <input class="irs large" type="text" ng-model="file.content.content.hookrun_uri" placeholder="Hook-run method path" />
             </div>
             <div class="irs form-inline">
-              <button class="irs large">Import</button>
+              <button class="irs large" ng-click="Setup.openHookRun();">Import</button>
             </div>
           </div>
         </div>
       </div>
       <div class="spacer"></div>
+
+      <!-- Parameters -->
       <div class="row">
         <div class="col-xs-8">
           <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.parameters, 'fa-angle-right': !Setup.display.parameters}" ng-click="Setup.display.parameters = !Setup.display.parameters"></i> Parameters</h2>
         </div>
         <div class="col-xs-4" align="right" ng-show="Setup.display.parameters">
+          <span class="irs link"><i class="fa fa-fw" ng-class="{'fa-lock': Setup.parameterLock, 'fa-unlock': !Setup.parameterLock}" ng-click="Setup.parameterLock = !Setup.parameterLock"></i></span>&nbsp;
           <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
         </div>
 
@@ -67,19 +70,22 @@
               <div class="overflow-tbody">
                 <table cellspacing="10" cellpadding="5" style="width: 100%;">
                   <tr ng-repeat="parameter in Setup.file.content.content.parameters | filter: searchParameters">
+                    <fieldset ng-disabled="Setup.parameterLock">
                     <td class="irs parameter-idx padding-r">{{ $index+1 }}</td>
-                    <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.name" /></td>
-                    <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.switch" /></td>
+                    <td class="irs parameter-data"><input ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }" ng-change="Setup.notifyParameterChange(parameter);" class="irs discreet parameter" ng-disabled="Setup.parameterLock" type="text" ng-model="parameter.name" /></td>
+                    <td class="irs parameter-data"><input ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }" ng-change="Setup.notifyParameterChange(parameter);" class="irs discreet parameter" ng-disabled="Setup.parameterLock" type="text" ng-model="parameter.switch" /></td>
                     <td class="irs parameter-type">
-                      <select ng-model="parameter.type" class="irs large discreet">
+                      <select ng-change="Setup.notifyParameterChange(parameter);" ng-model="parameter.type" ng-disabled="Setup.parameterLock" class="irs large discreet">
                         <option value="i">Integer</option>
-                        <option value="c">Category</option>
+                        <option value="c">Categorical</option>
                         <option value="r">Real</option>
                         <option value="o">Order</option>
                       </select>
-                    <td class="irs parameter-data"><input class="irs discreet parameter" type="text" ng-model="parameter.values" /></td>
-                    <td class="irs parameter-conditions"><input class="irs discreet parameter" type="text" ng-model="parameter.conditions" /></td>
-                  </tr></table>
+                    <td class="irs parameter-data"><input ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }" ng-change="Setup.notifyParameterChange(parameter);" class="irs discreet parameter" ng-disabled="Setup.parameterLock" type="text" ng-model="parameter.values" /></td>
+                    <td class="irs parameter-conditions"><input ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }" ng-change="Setup.notifyParameterChange(parameter);" class="irs discreet parameter" ng-disabled="Setup.parameterLock" type="text" ng-model="parameter.conditions" /></td>
+                  </tr>
+                  </fieldset>
+                </table>
                   <div ng-if="(Setup.file.content.content.parameters | filter: searchParameters).length == 0">No result found.</div>
 
                 </div>
@@ -100,6 +106,8 @@
             </div>
           </div>
           <div class="spacer"></div>
+
+          <!-- Candidates -->
           <div class="row">
             <div class="col-xs-8">
               <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.candidates, 'fa-angle-right': !Setup.display.candidates}" ng-click="Setup.display.candidates = !Setup.display.candidates"></i> Candidates</h2>
@@ -123,11 +131,23 @@
                   <tr ng-repeat="candidate in Setup.file.content.content.candidates.candidates | filter: searchCandidates">
                     <td class="irs candidate-idx padding-r">{{ $index+1 }}</td>
                     <td class="irs candidate-actions">
+                      <a href="" ng-click="candidate.lock = !candidate.lock"><i class="fa fa-fw" ng-class="{'fa-lock': candidate.lock, 'fa-unlock': !candidate.lock}"></i></a>&nbsp;&nbsp;
                       <input type="checkbox" aria-label="Use candidate" ng-model="candidate.selected"></input>&nbsp;&nbsp;
                       <a href="" ng-click="Setup.deleteCandidate($index);"><i class="fa fa-trash"></i></a>
                     </td>
-                    <td  class="irs candidate-label"><input class="irs discreet candidate-label" type="text" ng-model="candidate.label" /></td>
-                    <td  class="irs candidate-data" ng-repeat="parameter in Setup.file.content.content.candidates.parameters track by $index"><input class="irs discreet" type="text" ng-model="candidate.values[$index]" /></td>
+                    <td  class="irs candidate-label">
+                      <input
+                      ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }"
+                      ng-change="Setup.notifyCandidateChange(candidate);"
+                      ng-disabled="candidate.lock"
+                      class="irs discreet candidate-label"
+                      type="text"
+                      ng-model="candidate.label" />
+                    </td>
+                    <td  class="irs candidate-data"
+                    ng-repeat="parameter in Setup.file.content.content.candidates.parameters track by $index">
+                    <input ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0} }" ng-change="Setup.notifyCandidateChange(candidate);" class="irs discreet" ng-disabled="candidate.lock" type="text" ng-model="candidate.values[$index]" />
+                  </td>
                   </tr>
                 </table>
 
@@ -141,7 +161,7 @@
               <button class="irs large" ng-click="Setup.allSelected = !Setup.allSelected; Setup.selectAll();">Select all</button>
             </div>
             <div class="col-sm-3 irs nopadding">
-              <button class="irs large" ng-click="Setup.file.content.content.candidates.candidates.unshift({});">New candidate</button>
+              <button class="irs large" ng-click="Setup.newCandidate();">New candidate</button>
             </div>
             <div class="col-sm-3 irs nopadding">
               <button class="irs large" ng-click="Setup.openCandidates();">Import from file</button>
@@ -156,15 +176,13 @@
           <h2><i class="fa fa-fw" ng-class="{'fa-angle-down': Setup.display.history, 'fa-angle-left': !Setup.display.history}" ng-click="Setup.display.history = !Setup.display.history"></i> <span ng-show="Setup.display.history">History</span></h2>
 
           <div ng-show="Setup.display.history">
-            Logs for this file are empty.<br /><br />
-          <strong>[Today]</strong>
-          Lorem ipsum dolor sit amet, conseing elit, sed do eiusmod.
-          <br /><br />
-          <strong>[2 days ago]</strong> Ut enim ad minim exercitation ullamco.
-          <br /><br />
-          <strong>[1 month ago]</strong> Duisdolor in reprehenderit in voluptate.
-          <br /><br />
-          <strong>[1 year ago]</strong> Excepteur cupidatat non proident.
+            <div ng-if="Setup.file.content.content.history.length == 0">
+              Logs for this file are empty.
+            </div>
+            <div ng-repeat="h in Setup.file.content.content.history track by $index">
+              <strong>{{ h.date | date:'medium' }}</strong><br />
+              {{ h.text }}<br /><br />
+            </div>
         </div>
         </div>
       </div>

@@ -20,14 +20,19 @@
   "files": [
     "index.js",
     "index.html",
-    "index.css"
+    "index.css",
+    "templates",
+    "assets",
+    "app"
   ],
   "keywords": [
     "electron-app",
     "electron"
   ],
   "dependencies": {
-    "electron-debug": "^0.5.0"
+    "d3": "^3.5.16",
+    "electron-debug": "^0.5.0",
+    "home-dir": "^1.0.0"
   },
   "devDependencies": {
     "electron-packager": "^5.0.0",

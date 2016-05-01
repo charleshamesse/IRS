@@ -4,7 +4,8 @@ angular.module('app')
   $scope.Results = {
     "file": $scope.file
   };
-  require('./assets/js/svgtopng');
+  //require('./assets/js/svgtopng');
+  require('svgtopng');
 
   svgtopng.test('hah');
 

@@ -6,7 +6,7 @@
 
       <div class="irs form-inline-box">
         <div class="irs form-inline">
-          <input class="irs large" type="text" ng-model="Launch.scenario_uri" placeholder="Scenario path" />
+          <input class="irs large" type="text" ng-model="Launch.scenario_uri" ng-change="Launch.scenarioLoaded = true" placeholder="Scenario path" />
         </div>
         <div class="irs form-inline">
           <button class="irs large" ng-click="Launch.openScenario();">Import</button>
@@ -39,7 +39,7 @@
   <div class="spacer"></div>
 
   <!-- Second section -->
-  <div class="row" ng-show="Launch.applicationSelected">
+  <div class="row" ng-show="Launch.scenarioLoaded">
     <div class="col-sm-12">
       <div class="row">
         <!-- Candidates -->

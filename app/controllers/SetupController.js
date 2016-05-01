@@ -1,8 +1,15 @@
 angular.module('app')
 .controller('SetupController', function($scope) {
+  // Dependencies
+  var fs = require('fs');
+  var remote = require('remote');
+  var fpath = require("path");
+  var dialog = remote.require('dialog');
+  const BrowserWindow = remote.require('browser-window');
+
   // Global
   $scope.Setup = {
-    "history": [],
+    "parameterLock": true,
     "display": {
       "hookrun": true,
       "instances": true,
@@ -12,12 +19,13 @@ angular.module('app')
     }
   };
 
-  // Dependencies
-  var fs = require('fs');
-  var remote = require('remote');
-  var dialog = remote.require('dialog');
-  const BrowserWindow = remote.require('browser-window');
-
+  // History log
+  var log = function(message) {
+    $scope.Setup.file.content.content.history.unshift({
+      "date": new Date(),
+      "text": message
+    });
+  }
 
   //
   // Hook-run
@@ -26,6 +34,7 @@ angular.module('app')
   $scope.Setup.openHookRun = function() {
     dialog.showOpenDialog(function(path) {
       $scope.Setup.file.content.content.hookrun_uri = path[0];
+      log("Imported hook-run method from " + fpath.basename(path[0]) + "");
       $scope.$apply();
     });
   };
@@ -63,7 +72,8 @@ angular.module('app')
                 'label': "Candidate " + count,
                 'values': l.match(/\S+/g),
                 'develop': false,
-                'info': 'Source: "' + path + '".'
+                'info': 'Source: "' + path + '".',
+                'lock': true
               });
               ++count;
             }
@@ -90,14 +100,15 @@ angular.module('app')
               'label': candidate.label,
               'values': candidate.values,
               'develop': false,
-              'info': 'Candidate source'
+              'info': 'Candidate source',
+              'lock': true
             };
             i++;
             count++;
           });
 
           // Add history record
-          $scope.Setup.history.push({
+          $scope.Setup.file.content.content.history.push({
             'action': 'Imported ' + (count) + ' candidates',
             'detail': '',
             'date': new Date()
@@ -111,12 +122,8 @@ angular.module('app')
 
   // Delete a candidate
   $scope.Setup.deleteCandidate = function(id) {
+    log("Removed candidate " + $scope.Setup.file.content.content.candidates.candidates[id].label);
     $scope.Setup.file.content.content.candidates.candidates.splice(id,1);
-    $scope.Setup.history.push({
-      'action': 'Removed candidate ' + (id+1),
-      'detail': 'Candidate name',
-      'date': new Date()
-    });
   };
 
   // Select all candidates
@@ -125,6 +132,19 @@ angular.module('app')
       candidate.selected = $scope.Setup.allSelected;
     });
   }
+
+  // Notify candidate change
+  $scope.Setup.notifyCandidateChange = function(c) {
+    console.log("hi");
+    log("Edited candidate " + c.label);
+  };
+
+  // New candidate
+  $scope.Setup.newCandidate = function() {
+    $scope.Setup.file.content.content.candidates.candidates.unshift({});
+    log("Created new candidate");
+  };
+
   //
   // Parameters
   //
@@ -185,6 +205,11 @@ angular.module('app')
     }
   };
 
+  // Notify parameter change
+  $scope.Setup.notifyParameterChange = function(parameter) {
+    log("Edited parameter " + parameter.name);
+  };
+
   //
   // Instances
   //
@@ -209,24 +234,18 @@ angular.module('app')
         });
 
         // Fill corresponding array
-        var action = 'Selected ';
+        var action = 'Imported ';
         if(type == 0) {
-          //$scope.Setup.file.content.content.instances.testing = instances_temp;
           $scope.Setup.file.content.content.instances.testing_uri = path;
-          action += $scope.Setup.file.content.content.instances.testing.length + ' testing instances';
+          action += ' testing instances from ' + fpath.basename(path);
         }
         else {
-          //$scope.Setup.file.content.content.instances.training = instances_temp;
           $scope.Setup.file.content.content.instances.training_uri = path;
-          action += $scope.Setup.file.content.content.instances.training.length + ' training instances';
+          action += ' training instances from ' + fpath.basename(path);
         }
 
         // Add history record
-        $scope.Setup.history.push({
-          'action': action,
-          'detail': '',
-          'date': new Date()
-        });
+        log(action);
 
         $scope.$apply();
       }

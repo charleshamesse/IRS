@@ -18,22 +18,38 @@ angular.module('app')
           label: 'New Exploration',
         },
         {
+          label: 'Open...',
+          click: function(item, focusedWindow) {
+            var ret = $scope.FileExplorer.open();
+            // If it is a file, pass it to FileManager
+            if(ret.type == "file") FileManager.openFile(ret);
+            $scope.$apply();
+            /*
+            if($scope.FileExplorer.open()) {
+              $scope.FileExplorer = FileExplorer;
+              console.log("Updating");
+            }
+            */
+          },
+          accelerator: 'CmdOrCtrl+O',
+        },
+        {
           type: 'separator'
         },
-          {
-            label: 'Save',
-            click: function(item, focusedWindow) {
-              $scope.FileManager.save();
-            },
-            accelerator: 'CmdOrCtrl+S',
+        {
+          label: 'Save',
+          click: function(item, focusedWindow) {
+            $scope.FileManager.save();
           },
-          {
-            label: 'Save As...',
-            click: function(item, focusedWindow) {
-              $scope.FileManager.saveAs();
-            },
-            accelerator: 'Shift+CmdOrCtrl+S',
+          accelerator: 'CmdOrCtrl+S',
+        },
+        {
+          label: 'Save As...',
+          click: function(item, focusedWindow) {
+            $scope.FileManager.saveAs();
           },
+          accelerator: 'Shift+CmdOrCtrl+S',
+        }
       ]
     },
     {
