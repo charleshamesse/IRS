@@ -13,23 +13,32 @@ angular.module('app')
       submenu: [
         {
           label: 'New Scenario',
+          click: function(item, focusedWindow) {
+            var path = $scope.FileManager.createSetupFile();
+            var file = $scope.FileExplorer.open(path);
+            $scope.FileManager.openFile(file);
+            $scope.FileExplorer.refresh();
+            $scope.$apply();
+          },
+          accelerator: 'CmdOrCtrl+Option+S'
         },
         {
           label: 'New Exploration',
+          click: function(item, focusedWindow) {
+            var path = $scope.FileManager.createExplorationFile();
+            var file = $scope.FileExplorer.open(path);
+            $scope.FileManager.openFile(file);
+            $scope.FileExplorer.refresh();
+            $scope.$apply();
+          },
+          accelerator: 'CmdOrCtrl+Option+E'
         },
         {
           label: 'Open...',
           click: function(item, focusedWindow) {
             var ret = $scope.FileExplorer.open();
-            // If it is a file, pass it to FileManager
             if(ret.type == "file") FileManager.openFile(ret);
             $scope.$apply();
-            /*
-            if($scope.FileExplorer.open()) {
-              $scope.FileExplorer = FileExplorer;
-              console.log("Updating");
-            }
-            */
           },
           accelerator: 'CmdOrCtrl+O',
         },

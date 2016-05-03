@@ -22,15 +22,17 @@ angular.module('app')
     observerCallback();
   };
   // Launch
-  this.launch = function(cmd) {
+  this.launch = function(parameters) {
+    console.log(parameters);
+    Explorer.terminalOutput = "";
     var cmd  = cp.exec('Rscript ../work/explore.R '
-    + '--parameter-file "../../irs-generated/parameters.txt" '
-    + '--sel-param-file ../../irs-generated/selection.txt '
-    + '--candidates-file ../../irs-generated/candidates.txt '
-    + '--instance-file ../work/instances.txt '
-    + '--hook-run ../work/hook-run-rand '
-    + '--parallel 1 --type full '
-    + '--log-file ../work/test.txt');
+    + '--parameter-file "' + parameters.parameterFile + '" '
+    + '--sel-param-file "' + parameters.selectionFile + '" '
+    + '--candidates-file "' + parameters.candidatesFile + '" '
+    + '--instance-file "' + parameters.instanceFile + '" '
+    + '--hook-run "' + parameters.hookRun + '" '
+    + '--parallel 1 --type "' + parameters.type + '" '
+    + '--log-file "' + parameters.logFile + '"');
     var counter = 0;
     cmd.stdout.on('data', function(data) {
       Explorer.terminalOutput += data;

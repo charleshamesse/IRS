@@ -101,7 +101,6 @@ angular.module('app')
         appendChildren(parent.children[maxIdx], groups, level+1);
     };
     appendChildren(treeData[0], groups, 0);
-
     return treeData;
   };
 

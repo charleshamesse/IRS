@@ -5,6 +5,7 @@ angular.module('app')
   var remote = require('remote');
   var fpath = require("path");
   var dialog = remote.require('dialog');
+  require('svgtopng');
   const BrowserWindow = remote.require('browser-window');
 
   // Global
@@ -16,8 +17,16 @@ angular.module('app')
       "parameters": true,
       "candidates": true,
       "history": true
-    }
+    },
+    "displayParameterTree": false,
+    "parameterTreeData" : [{
+      "name": "Origin",
+      "children": [],
+      "parent": null,
+      "score": 10000
+    }]
   };
+
 
   // History log
   var log = function(message) {
@@ -149,7 +158,7 @@ angular.module('app')
   // Parameters
   //
 
-  $scope.importParameters = function() {
+  $scope.Setup.importParameters = function() {
     dialog.showOpenDialog(function(f) {
       scanParameters(f[0]);
     });
@@ -208,6 +217,34 @@ angular.module('app')
   // Notify parameter change
   $scope.Setup.notifyParameterChange = function(parameter) {
     log("Edited parameter " + parameter.name);
+  };
+
+  // Dependency tree
+  $scope.Setup.plotDepencyTree = function() {
+    // Reinit
+    $scope.Setup.parameterTreeData[0].children = [];
+    // Maybe deep-copy it instead?
+    var parameters = $scope.Setup.file.content.content.parameters;
+    angular.forEach(parameters, function(p1) {
+      p1.children = [];
+      p1.score = 10000;
+    });
+    angular.forEach(parameters, function(p1) {
+      var hasDependencies = false;
+      angular.forEach(parameters, function(p2) {
+        // Look in p1 conditions if there exists occurences of p2
+        // If p1 has dependencies
+        var re = new RegExp("\\b" + p2.name, 'g'); //" +p2.name
+        var match = p1.conditions.match(re);
+        if(match != null) {
+          hasDependencies = true;
+          p2.children.push(p1);
+          p1.parentName = p2.name;
+        }
+      });
+      if(!hasDependencies)
+        $scope.Setup.parameterTreeData[0].children.push(p1);
+    });
   };
 
   //

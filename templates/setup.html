@@ -94,17 +94,26 @@
 
               <div class="row irs padding">
                 <div class="col-sm-4 irs nopadding">
-                  <button class="irs large">New parameter</button>
+                  <button class="irs large" ng-click="Setup.plotDepencyTree(); Setup.displayParameterTree = !Setup.displayParameterTree"><span ng-show="!Setup.displayParameterTree">Plot</span><span ng-show="Setup.displayParameterTree">Hide</span> dependency tree</button>
                 </div>
                 <div class="col-sm-4 irs nopadding">
-                  <button class="irs large" ng-click="importParameters();">Import from file</button>
+                  <button class="irs large" ng-click="Setup.importParameters();">Import from file</button>
                 </div>
                 <div class="col-sm-4 irs nopadding">
-                  <button class="irs large">Save file</button>
+                  <button class="irs large" ng-click="Setup.exportParameters();">Save file</button>
                 </div>
               </div>
             </div>
           </div>
+          <div ng-show="Setup.displayParameterTree">
+          <div style="overflow-x: auto;">
+          <d3-horizontal-tree data="Setup.parameterTreeData" id="treePlot" label="name"></d3-bars>
+          </div>
+          <a href="" ng-click="displayParameterTreeString = !displayParameterTreeString">
+            <span ng-show="!displayParameterTreeString">Display</span><span ng-show="displayParameterTreeString">Hide</span> raw parameter tree (with level and number of children)
+          </a>
+          <pre ng-show="displayParameterTreeString">{{ Setup.parameterTreeData | json }}</pre>
+        </div>
           <div class="spacer"></div>
 
           <!-- Candidates -->
@@ -167,7 +176,7 @@
               <button class="irs large" ng-click="Setup.openCandidates();">Import from file</button>
             </div>
             <div class="col-sm-3 irs nopadding">
-              <button class="irs large">Save file</button>
+              <button class="irs large" ng-click="Setup.exportCandidates();">Save file</button>
             </div>
           </div>
         </div>

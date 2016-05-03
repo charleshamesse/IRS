@@ -1,16 +1,33 @@
 'use strict';
 
 angular.module('app')
-.factory('FileManager', function($filter){
+.factory('FileManager', function($filter, FileWriter){
   var FileManager = {};
   var fs = require('fs');
   var path = require("path");
   var remote = require('remote');
   var dialog = remote.require('dialog');
   var options = {filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
+  var optionsCreate = {title: "Create", filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
 
   // List of open files
   FileManager.filesOpened = [];
+
+  // Create file
+  FileManager.createSetupFile = function() {
+    var fpath = dialog.showSaveDialog(optionsCreate);
+    if(fpath != null) {
+      FileWriter.createSetupFile(fpath);
+      return fpath;
+    }
+  }
+  FileManager.createExplorationFile = function() {
+    var fpath = dialog.showSaveDialog(optionsCreate);
+    if(fpath != null) {
+      FileWriter.createExplorationFile(fpath);
+      return fpath;
+    }
+  }
 
   // View a file
   FileManager.activateFile = function(file) {
@@ -22,7 +39,6 @@ angular.module('app')
 
   // Open a file
   FileManager.openFile = function(file) {
-    console.log(file);
     // If file is already open
     if(file.isOpened) {
       FileManager.activateFile(file);

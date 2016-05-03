@@ -177,6 +177,15 @@ span.irs.file-exp.root-dir {
 	height: 5px;
 }
 
+.irs.parameter-view {
+	padding-left: 10px;
+	border-left: 1px solid rgb(238, 238, 238);
+}
+
+.irs.history-more {
+	color: rgb(70, 70, 70);
+}
+
 /** Forms */
 
 label {
@@ -338,6 +347,12 @@ textarea.irs.comment {
 	background: none;
 	border:none;
 	padding: 0;
+}
+.irs.list-group-item {
+	cursor: pointer;
+}
+.irs.list-group-hover {
+	background-color: rgb(245, 245, 245);
 }
 
 
