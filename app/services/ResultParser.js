@@ -12,8 +12,6 @@ angular.module('app')
   };
 
   this.parseFullExploration = function(stdout) {
-    result.topline = "Full Exploration results";
-
     var lines = stdout.match(/[^\r\n]+/g);
     result.plotData = [];
     result.lines = lines;
@@ -25,9 +23,7 @@ angular.module('app')
       };
       result.plotData.push(pair);
     });
-
-    result.bottomline = "Done. :)";
-    return result;
+    return result.plotData;
   };
 
   this.parseAblation = function(stdout) {
@@ -42,7 +38,7 @@ angular.module('app')
         treeData = [{
           "name": "Initial",
           "parent": "null",
-          "score": 24269,
+          "score": 1,
           "children": []
         }],
         currentParameter = "",

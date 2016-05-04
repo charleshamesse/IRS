@@ -1,5 +1,5 @@
 <script src="assets/js/svgtopng.js"></script>
-<div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file">
+<div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file; Results.prepare();">
   <div class="row">
     <div class="col-sm-9 col-xs-6">
         <div style="white-space:nowrap">
@@ -32,7 +32,7 @@
     <div class="col-sm-12">
       <h3>Tree</h3>
       <div style="overflow-x: auto;">
-      <d3-horizontal-tree data="d3TreeData" id="treePlot" label="name"></d3-horizontal-tree>
+      <d3-horizontal-tree data="d3TreeData" id="treePlot" label="name"></d3-horizontal-tree> 
       </div>
     </div>
     <div class="col-sm-12">

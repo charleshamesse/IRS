@@ -5,7 +5,8 @@ angular.module('app')
 
   // Globals and dependencies
   var fs = require('fs'),
-  cp = require('child_process');
+      cp = require('child_process'),
+      mkdirp = require('mkdirp');
 
   // Main write method
   this.write = function(path, content) {
@@ -16,15 +17,8 @@ angular.module('app')
 
   // Content generation
   this.makeResourcesDir = function(path) {
-    fs.stat(path, function(err, stats) {
-      //Check if error defined and the error code is "not exists"
-      if (err && err.errno === 34) {
-        //Create the directory, call the callback.
-        fs.mkdir(path, (err) => {
-          if (err) throw err;
-        });
-      }
-      // else, it exists
+    mkdirp(path, function(err) {
+      if(err) console.log(err);
     });
   }
 
@@ -127,25 +121,33 @@ angular.module('app')
   };
 
   /** Exporting explorations to result files **/
-  this.writeSingleExport = function(path, result, type) {
-    var res, lines, c;
-    switch(type) {
+  this.writeSingleExport = function(path, result, name, command, dates) {
+    var res,
+        lines = [],
+        lines2 = [],
+        exportNow = false;
+    switch(command.type) {
       case 'full':
-        res =result.split('### EXECUTING FULL EXPLORATION')[1];
-        lines = res.match(/[^\s]+/g);
+        lines = result.trim().split('\n');
         angular.forEach(lines, function(l) {
           l = l.trim();
+          if(exportNow)
+            lines2.push(l);
+          if(l == '### EXECUTING FULL EXPLORATION')
+            exportNow = true;
         });
       break;
       case 'ablation':
       break;
     }
-    var content = `{
+    var content = {
 	"type": "results",
 	"content": {
-		"stdout": ` + JSON.stringify(lines) + `,
+    "dates": dates,
+    "command": command,
+		"stdout": lines2,
 		"text": {
-			"title": "",
+			"title": name,
 			"abstract": "",
 			"author": "",
 			"firstGraph": "",
@@ -153,9 +155,19 @@ angular.module('app')
       "conclusion": ""
 		}
 	}
-}`;
-    return this.write(path, content);
+};
+  return this.write(path, JSON.stringify(content));
   };
+
+  this.writeBatchExport = function(path, explorations) {
+    var content = {
+      "type": "results-multiple",
+      "content": {
+        "explorations": explorations
+      }
+    };
+    return this.write(path, JSON.stringify(content));
+  }
 
   /** LaTeX Export **/
   this.writeTeXFile = function(dir, text, plots, relativePath, compile) {

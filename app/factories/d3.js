@@ -362,7 +362,7 @@ angular.module('app')
 
             // set up variables
             var width, height, max;
-            width = 230*5;  //d3.select(iElement[0])[0][0].offsetWidth;
+            width = 240*5;  //d3.select(iElement[0])[0][0].offsetWidth;
             height = 500;
             svg.attr('height', height);
             svg.attr('width', width);
@@ -419,7 +419,7 @@ angular.module('app')
               nodeEnter.append("text")
               .attr("x", function(d) { return 0; //d.children || d._children ? -13 : 13;
               })
-              .attr("dy", function(d) { return  -(d.score/30000*20+3) + "px" })//".35em")
+              .attr("dy", function(d) { console.log(d); console.log(-(d.score/30000*20+3)); return  -(d.score/30000*20+3) + "px" })//".35em")
               .attr("text-anchor", function(d) {
                 return "middle"; //return d.children || d._children ? "end" : "start";
               })

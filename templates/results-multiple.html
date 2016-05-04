@@ -1,0 +1,16 @@
+<script src="assets/js/svgtopng.js"></script>
+<div class="irs padding" ng-controller="ResultsMultipleController" ng-init="ResultsMultiple.file = file">
+  <div class="row">
+    <div class="col-sm-12">
+    <h2>Multiple results</h2>
+    </div>
+  </div>
+  <div class="row" ng-repeat="e in file.content.content.explorations">
+    <div class="col-sm-12">
+      <h4>{{ e.name }}</h4>
+      <div class="well">
+      {{ e | json }}
+    </div>
+    </div>
+  </div>
+</div>

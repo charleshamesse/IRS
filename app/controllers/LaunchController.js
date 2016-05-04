@@ -3,6 +3,7 @@ angular.module('app')
   // Globals
   $scope.Launch = {
     "isLaunched": false,
+    "dates": [],
     "avalation": {},
     "irace": {},
     "fullexplore": {},
@@ -29,23 +30,29 @@ angular.module('app')
     }
   };
   $scope.Launch.parameterTypes = {
-      "i": {
-        "name": "integer",
-        "value": "i"
-      },
-      "r": {
-        "name": "real",
-        "value": "r"
-      },
-      "c": {
-        "name": "categorical",
-        "value": "c"
-      },
-      "o": {
-        "name": "order",
-        "value": "o"
-      }
+    "i": {
+      "name": "integer",
+      "value": "i"
+    },
+    "r": {
+      "name": "real",
+      "value": "r"
+    },
+    "c": {
+      "name": "categorical",
+      "value": "c"
+    },
+    "o": {
+      "name": "order",
+      "value": "o"
+    }
   };
+
+  // Dependencies
+  var fs = require('fs');
+  var remote = require('remote');
+  var mpath = require('path');
+  var dialog = remote.require('dialog');
 
   $scope.Launch.workDir = $scope.file.path.substring(0, $scope.file.path.lastIndexOf("/") + 1);
   $scope.Launch.prepare = function() {
@@ -60,13 +67,33 @@ angular.module('app')
       "text": message,
       "more": more
     });
-  }
+  };
 
-  // Dependencies
-  var fs = require('fs');
-  var remote = require('remote');
-  var mpath = require('path');
-  var dialog = remote.require('dialog');
+  // Count instances
+  $scope.Launch.countInstances = function(ptr, pte) {
+    var nptr = 0,
+    npte = 0;
+    // Training
+    var data = fs.readFileSync(ptr, 'utf8');
+    if (!data) dialog.showMessageBox('Error', 'Unable to open training instances file: ' + ptr + '\n' + err);
+    else {
+      var lines = data.split('\n');
+      angular.forEach(lines, function(l) {
+        if(l != "") nptr++;
+      });
+    }
+    // Training
+    data = fs.readFileSync(pte, 'utf8');
+    if (!data) dialog.showMessageBox('Error', 'Unable to open training instances file: ' + pte + '\n' + err);
+    else {
+      var lines = data.split('\n');
+      angular.forEach(lines, function(l) {
+        if(l != "") npte++;
+      });
+    }
+    return [nptr, npte];
+
+  }
 
   // Open candidates dialog and load scenario
   $scope.Launch.openScenario = function() {
@@ -97,6 +124,7 @@ angular.module('app')
         $scope.Launch.file.content.content.scenario_uri = path;
         $scope.Launch.command.hookRun = $scope.Launch.scenario.content.hookrun_uri;
         $scope.Launch.command.instanceFile = $scope.Launch.scenario.content.instances.training_uri;
+        $scope.Launch.instancesInfo = $scope.Launch.countInstances($scope.Launch.scenario.content.instances.training_uri, $scope.Launch.scenario.content.instances.testing_uri);
 
         // 4. Apply
         $scope.Launch.scenarioLoaded = true;
@@ -117,43 +145,47 @@ angular.module('app')
   $scope.Launch.viewParameter = function(p) {
     $scope.Launch.hoverParameter = p;
   };
+
+
   // Launch exploration
   $scope.Launch.makeCommand = function(d) {
-      var irsDir = $scope.Launch.workDir + $scope.Launch.irsDir + "/";
-      $scope.Launch.command.preview = $scope.Launch.command.prefix + " "
-      + " --parameter-file " + irsDir + "parameters-" + d + ".txt"
-      + " --sel-parameter-file " + irsDir + "selection-" + d + ".txt"
-      + " --candidates-file " + irsDir + "candidates-" + d + ".txt"
-      + " --log-file " + irsDir + "irs-log"
-      + " --instance-file " + $scope.Launch.scenario.content.instances.testing_uri
-      + " --hook-run " + $scope.Launch.scenario.content.hookrun_uri
-      + " --parallel " + $scope.Launch.command.parallel
-      + " --type " + $scope.Launch.command.type;
+    var irsDir = $scope.Launch.workDir + $scope.Launch.irsDir + "/";
+    $scope.Launch.command.preview = $scope.Launch.command.prefix + " "
+    + " --parameter-file " + irsDir + "parameters-" + d + ".txt"
+    + " --sel-parameter-file " + irsDir + "selection-" + d + ".txt"
+    + " --candidates-file " + irsDir + "candidates-" + d + ".txt"
+    + " --log-file " + irsDir + "irs-log"
+    + " --instance-file " + $scope.Launch.scenario.content.instances.testing_uri
+    + " --hook-run " + $scope.Launch.scenario.content.hookrun_uri
+    + " --parallel " + $scope.Launch.command.parallel
+    + " --type " + $scope.Launch.command.type;
   }
   $scope.Launch.launchExploration = function() {
 
     // Globals and dependencies
     var exec = require('child_process').exec;
     $scope.Launch.result = "";
-    var d = new Date().toISOString();
+    // Date
+    var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+    var d = (new Date(Date.now() - tzoffset)).toISOString().slice(0,-1);
 
     // TO-DO: Check candidate number: FE	1 candidate, n parameters, A	2 candidates, n parameters, I	n candidates, n parameters
 
     // Generate text file
-    var resourcesDir = $scope.Launch.workDir + "irs-generated/",
-        parameterSelection = $filter('filter')($scope.Launch.scenario.content.parameters, {selected: true}, true),
-        candidateSelection = [],
-        parameterFile = resourcesDir + "parameters-" + d + ".txt",
-        selectionFile = resourcesDir + "selection-" + d + ".txt",
-        candidatesFile = resourcesDir + "candidates-" + d + ".txt",
-        logFile = resourcesDir + "log-" + d;
+    var resourcesDir = $scope.Launch.workDir + "irs-generated/" + $scope.Launch.explorationName + "-" + d + "/" ,
+    parameterSelection = $filter('filter')($scope.Launch.scenario.content.parameters, {selected: true}, true),
+    candidateSelection = [],
+    parameterFile = resourcesDir + "parameters-" + d + ".txt",
+    selectionFile = resourcesDir + "selection-" + d + ".txt",
+    candidatesFile = resourcesDir + "candidates-" + d + ".txt",
+    logFile = resourcesDir + "log-" + d;
 
     switch($scope.Launch.command.type) {
       case 'ablation':
-        candidateSelection = $filter('filter')($scope.Launch.scenario.content.candidates.candidates, {selected: true}, true);
-        break;
+      candidateSelection = $filter('filter')($scope.Launch.scenario.content.candidates.candidates, {selected: true}, true);
+      break;
       case 'full':
-        candidateSelection[0] =  $scope.Launch.scenario.content.candidates.candidates[$scope.Launch.selectedCandidate];
+      candidateSelection[0] =  $scope.Launch.scenario.content.candidates.candidates[$scope.Launch.selectedCandidate];
     }
     FileWriter.makeResourcesDir(resourcesDir);
     FileWriter.writeParameterFile(parameterFile, $scope.Launch.scenario.content.parameters);
@@ -173,41 +205,48 @@ angular.module('app')
       return(this.indexOf(string) === 0);
     };
 
-    var updateResult = function(){
-      var temp = Explorer.output(),
-          lines = temp.split('\n'),
-          output = "";
-      // Terminal line coloring
-      lines.forEach(function(l) {
-        if(l.beginsWith('#')) {
-          l = '<span class="text-success">' + l + '</span>';
-        }
-        else if(l.beginsWith('Warning') || l.beginsWith('WARNING')) {
-          l = '<span class="text-warning">' + l + '</span>';
-        }
-        output += l + '\n';
-      });
+    var updateResult = function(finished){
+      if(!finished) {
+        var temp = Explorer.output(),
+        lines = temp.split('\n'),
+        output = "";
+        // Terminal line coloring
+        lines.forEach(function(l) {
+          if(l.beginsWith('#')) {
+            l = '<span class="text-success">' + l + '</span>';
+          }
+          else if(l.beginsWith('Warning') || l.beginsWith('WARNING')) {
+            l = '<span class="text-warning">' + l + '</span>';
+          }
+          output += l + '\n';
+        });
 
-      $scope.Launch.result = output.replace(/(?:\r\n|\r|\n)/g, '<br>');;
-      $scope.$apply();
+        $scope.Launch.result = output.replace(/(?:\r\n|\r|\n)/g, '<br>');;
+        $scope.$apply();
+      }
+      else {
+        $scope.Launch.dates = Explorer.getDates();
+        $scope.Launch.file.content.content.explorations.push({
+          "name": $scope.Launch.explorationName,
+          "command": $scope.Launch.command,
+          "dates": $scope.Launch.dates,
+          "dir": resourcesDir
+        });
+      }
     };
 
     Explorer.registerObserverCallback(updateResult);
 
     $scope.Launch.isLaunched = true;
+    $scope.Launch.dirInfo = resourcesDir;
 
     // Log and add to exp list
     log("Launched an exploration using " + $scope.Launch.command.type, "Command preview: " + $scope.Launch.command.preview);
-    $scope.Launch.file.content.content.explorations.push({
-      "name": $scope.Launch.explorationName,
-      "date": d,
-      "dir": resourcesDir
-    });
+
 
   }
 
   $scope.Launch.export = function() {
-    console.log($scope.Launch.file);
     var options = {
       "defaultPath": mpath.dirname($scope.Launch.file.path),
       "properties": ['openFile', 'createDirectory'],
@@ -216,7 +255,25 @@ angular.module('app')
     var fpath = dialog.showSaveDialog(options);
 
     if(fpath != null) {
-      FileWriter.writeSingleExport(fpath, Explorer.output(), $scope.Launch.command.type);
+      FileWriter.writeSingleExport(fpath, Explorer.output(), $scope.Launch.explorationName, $scope.Launch.command, $scope.Launch.dates);
+      var file = $scope.FileExplorer.open(fpath);
+      $scope.FileManager.openFile(file);
+    }
+  }
+
+  $scope.Launch.batchExport = function() {
+    var options = {
+      "defaultPath": mpath.dirname($scope.Launch.file.path),
+      "properties": ['openFile', 'createDirectory'],
+      "filters": [{ name: 'IR Studio files', extensions: ['ir'] }]
+    };
+    var fpath = dialog.showSaveDialog(options);
+
+    if(fpath != null) {
+      var selectedExplorations = $filter('filter')($scope.Launch.file.content.content.explorations, {selected: true});
+      FileWriter.writeBatchExport(fpath, selectedExplorations);
+      var file = $scope.FileExplorer.open(fpath);
+      $scope.FileManager.openFile(file);
     }
   }
 

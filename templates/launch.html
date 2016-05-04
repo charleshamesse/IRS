@@ -23,7 +23,7 @@
           </div><br />
           <strong>Last modification:</strong> {{ Launch.scenario.content.history[0].date | date:'medium' }}<br />
           <strong>Number of candidates:</strong> {{ Launch.scenario.content.candidates.candidates.length || 0 }}<br />
-          <strong>Instances:</strong> training or testing?
+          <strong>Instances:</strong> {{ Launch.instancesInfo[0] }} for training, {{ Launch.instancesInfo[1] }} for testing
         </div>
 
         </div>
@@ -150,12 +150,15 @@
     <div class="spacer" ng-if="Launch.display.new"></div>
 
     <!-- Terminal output -->
+    <div ng-show="Launch.isLaunched && Launch.display.new">
+      <strong>Exploration launched in: </strong>{{ Launch.dirInfo }}
+    </div>
     <div ng-show="Launch.isLaunched && Launch.display.new" ng-bind-html="Launch.result">
     </div>
 
     <div class="row" ng-show="Launch.isLaunched && Launch.display.new">
       <div class="col-sm-12">
-        <button class="irs large" ng-click="Launch.export();">Export and analyse</button>
+        <button class="irs large" ng-click="Launch.export();">Create report</button>
       </div>
     </div>
     <div class="spacer"></div>
@@ -167,10 +170,12 @@
         The following explorations have already been executed in this context:
         <div class="spacer small"></div>
         <div class="list-group">
-          <a class="list-group-item irs" ng-class="{'list-group-hover': e.selected}"ng-click="e.selected = !e.selected" ng-repeat="e in Launch.file.content.content.explorations">
-            <h4 class="list-group-item-heading"><input ng-model="e.selected" type="checkbox" /> {{ e.name }}</h4>
-            <p class="list-group-item-text">On {{ e.date | date:'medium'}} in {{ e.dir }}</p>
-          </a>
+          <span class="list-group-item irs" ng-class="{'list-group-hover': e.selected}" ng-click="e.selected = !e.selected" ng-repeat="e in Launch.file.content.content.explorations">
+            <h4 class="list-group-item-heading"><input ng-model="e.selected" type="checkbox" /> {{ e.name }} <small>{{ e.command.type }}</small></h4>
+            <p class="list-group-item-text">
+              From {{ e.dates[0] | date:'medium'}} to {{ e.dates[1] | date:'medium'}}<br />
+              In {{ e.dir }} <a href="" ng-click="Launch.file.content.content.explorations.splice($index, 1);"><span class="pull-right">delete</span></a></p>
+          </span>
         </div>
 
         <button class="irs large" ng-click="Launch.batchExport();">Export selected explorations</button>

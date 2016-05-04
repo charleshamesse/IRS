@@ -77,6 +77,9 @@ angular.module('app')
         case "results":
         file.editor = "templates/results.html";
         break;
+        case "results-multiple":
+        file.editor = "templates/results-multiple.html";
+        break;
         default:
         file.content = data;
         file.textonly = true;
