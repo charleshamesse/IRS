@@ -24,7 +24,7 @@
     </div>
     <div class="col-sm-12">
       <h3>Line plot</h3>
-      <d3-ordinal-line data="d3Data" id="linePlot" label="name"></d3-bars>
+      <d3-ordinal-line data="d3Data" id="linePlot-{{ Results.file.name  }}" label="name"></d3-bars>
     </div>
     <div class="col-sm-12">
     <textarea ng-model="Results.file.content.content.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
@@ -32,28 +32,24 @@
     <div class="col-sm-12">
       <h3>Tree</h3>
       <div style="overflow-x: auto;">
-      <d3-horizontal-tree data="d3TreeData" id="treePlot" label="name"></d3-horizontal-tree> 
+      <d3-horizontal-tree data="d3TreeData" id="treePlot-{{ Results.file.name  }}" label="name"></d3-horizontal-tree>
       </div>
     </div>
     <div class="col-sm-12">
     <textarea ng-model="Results.file.content.content.text.secondGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
     </div>
     <div class="col-sm-12">
-      <h3>Raw terminal output</h3>
-    <pre>{{ Results.file.content.content.stdout | json}}</pre>
-      <h3>Command executed</h3>
-    <pre>Rscript explore.R --parameter-file example/parameters-acotsp.txt --sel-param-file example/selection.txt --candidates-file example/acotsp-parameters-default.txt --instance-file example/instances.txt --hook-run example/hook-run-rand --parallel 1 --type full --log-file test.txt</pre>
+      <h2>Conclusion</h2>
     </div>
     <div class="col-sm-12">
-      <h2>Scenario</h2>
+      <textarea ng-model="Results.file.content.content.text.conclusion" rows="6" cols="50"  class="irs comment" placeholder="Insert conclusion here.."></textarea>
     </div>
     <div class="col-sm-12">
-      <input type="checkbox" ng-model="Results.text.exportParameters"> Export parameters</input><br />
-      <input  type="checkbox" ng-model="Results.text.exportParameterSelection"> Export parameter selection</input><br />
-      <input  type="checkbox" ng-model="Results.text.exportCandidates"> Export candidates</input><br />
+      <h2>Scenario review</h2>
     </div>
     <div class="col-sm-12">
-        <pre>{{ Results.latexContent }}</pre>
+      <input type="radio" checked name="scenarioExportType" value="short"> <strong>Short version: </strong>number of parameters of each type and selected candidates. <br />
+      <input type="radio" name="scenarioExportType" value="long"> <strong>Long version: </strong>complete parameter space description, number of instances, file paths and selected candidates
     </div>
 
 </div>

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('app')
-.service('FileWriter', function () {
+.service('FileWriter', function ($filter) {
 
   // Globals and dependencies
   var fs = require('fs'),
@@ -170,8 +170,7 @@ angular.module('app')
   }
 
   /** LaTeX Export **/
-  this.writeTeXFile = function(dir, text, plots, relativePath, compile) {
-    console.log(text);
+  this.writeSingleExplorationTeXFile = function(dir, text, dates, plots, compile) {
     // Globals
     var content =`\\title{` + text.title + `}
     \\author{` + text.author + `}
@@ -188,30 +187,28 @@ angular.module('app')
     \\section{Scenario}
     Scenario data
     \\section{Exploration}
-    The exploration was carried out using Full Exploration on 2 CPU cores from startTime to endTime. The parameters used in this exploration are:\\\\
+    The exploration was carried out using Full Exploration on 2 CPU cores from ` +  $filter('date')(dates[0], 'medium')  + ` to ` +  $filter('date')(dates[1], 'medium') + `. The parameters used in this exploration are:\\\\
     ...\\\\
     And the initial candidates:\\\\
     ...
     \\section{Results}
     \\begin{figure}[H]
     \\centering
-    \\includegraphics[width=\\linewidth]{` + relativePath + `` + plots[0] + `}
+    \\includegraphics[width=\\linewidth]{` + dir + `` + plots[0] + `}
     \\end{figure}` + text.firstGraph + `\\begin{figure}[H]
     \\centering
-    \\includegraphics[width=\\linewidth]{` + relativePath + `` + plots[1] + `}
+    \\includegraphics[width=\\linewidth]{` + dir + `` + plots[1] + `}
     \\end{figure}` + text.secondGraph + `
     \\section{Conclusion}
     ` + text.conclusion + `
 
-    \\end{document}
-    This is never printed`;
+    \\end{document}`;
     this.write(dir + "report.tex", content);
 
     fs.writeFileSync(dir + "report.tex", content, 'utf8');
     // Compile
     if(compile) {
-      var cmd       = 'pdflatex -output-directory=' + dir + ' ' + dir + 'report.tex',
-      pdflatex  = cp.exec('pdflatex -interaction=nonstopmode -output-directory=' + dir + ' ' + dir + 'report.tex');
+      var pdflatex  = cp.exec('pdflatex -interaction=nonstopmode -output-directory="' + dir + '" "' + dir + 'report.tex"');
 
       pdflatex.stdout.on('data', function(data) {
         console.log(data);

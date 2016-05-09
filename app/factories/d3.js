@@ -304,11 +304,6 @@ angular.module('app')
 
               text.append("svg:tspan").style("fill", irsBlue).text("Performance: ");
               text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text(d.y);
-              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", irsBlue).text("Parameters:");
-              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P1");
-              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P2");
-              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P3");
-              text.append("svg:tspan").attr({x:xScale(d.x) + 15, dy: 15}).style("fill", "black").text("P4");
 
 
             }
@@ -355,6 +350,29 @@ angular.module('app')
             return scope.render(newDataCopy);
           }, true);
 
+          // Get the tree depth. It is a basic find-max algorithm to find children who have children themse
+          var getDepth = function(data) {
+            depth = 1;
+
+            node = data[0];
+
+            while(node.children != null && node.children.length != 0 ) {
+              depth++;
+              max = 0;
+              idx = 0;
+              i = 0;
+              angular.forEach(node.children, function(child) {
+                if(child.children.length > max) {
+                  max = child.children.length;
+                  idx = i;
+                }
+                i++;
+              });
+              node = node.children[idx];
+            }
+            return depth;
+          }
+
 
           scope.render = function(data) {
             // clear out everything in the svg to render a fresh version
@@ -362,7 +380,7 @@ angular.module('app')
 
             // set up variables
             var width, height, max;
-            width = 240*5;  //d3.select(iElement[0])[0][0].offsetWidth;
+            width = 170*getDepth(data);  //d3.select(iElement[0])[0][0].offsetWidth;
             height = 500;
             svg.attr('height', height);
             svg.attr('width', width);
@@ -372,7 +390,7 @@ angular.module('app')
 
             // ************** Generate the tree diagram	 *****************
             var margin = {top: 0, right: 120, bottom: 0, left: 120},
-            width = 230*8 - margin.right - margin.left, //groups.length
+            width = 230*4 - margin.right - margin.left, //groups.length
             height = 500 - margin.top - margin.bottom;
 
             var i = 0,
@@ -419,7 +437,7 @@ angular.module('app')
               nodeEnter.append("text")
               .attr("x", function(d) { return 0; //d.children || d._children ? -13 : 13;
               })
-              .attr("dy", function(d) { console.log(d); console.log(-(d.score/30000*20+3)); return  -(d.score/30000*20+3) + "px" })//".35em")
+              .attr("dy", function(d) { return  -(d.score/30000*20+3) + "px" })//".35em")
               .attr("text-anchor", function(d) {
                 return "middle"; //return d.children || d._children ? "end" : "start";
               })

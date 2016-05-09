@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('SetupController', function($scope) {
+.controller('SetupController', function($scope, FileParser) {
   // Dependencies
   var fs = require('fs');
   var remote = require('remote');
@@ -24,9 +24,28 @@ angular.module('app')
       "children": [],
       "parent": null,
       "score": 10000
-    }]
+    }],
+    "parameters": {
+      "categories": {
+        "i": {
+          "name": "Integer",
+          "value": "i"
+        },
+        "r": {
+          "name": "Real",
+          "value": "r"
+        },
+        "c": {
+          "name": "Categorical",
+          "value": "c"
+        },
+        "o": {
+          "name": "Order",
+          "value": "o"
+        }
+      }
+    }
   };
-
 
   // History log
   var log = function(message) {
@@ -65,10 +84,10 @@ angular.module('app')
       else {
         // Parse candidate file
         var lines = data.trim().split('\n'),
-            count = 0,
-            parameters = [],
-            candidates = [],
-            values = [];
+        count = 0,
+        parameters = [],
+        candidates = [],
+        values = [];
         lines.forEach(function(l) {
           if(l[0] != '#' && l != "") {
             // Parameter list
@@ -88,8 +107,6 @@ angular.module('app')
             }
           }
         });
-        console.log(candidates);
-        console.log(parameters);
         $scope.Setup.file.content.content.candidates.parameters = parameters;
         $scope.Setup.file.content.content.candidates.candidates = $scope.Setup.file.content.content.candidates.candidates.concat(candidates);
 
@@ -157,61 +174,11 @@ angular.module('app')
   //
   // Parameters
   //
-
   $scope.Setup.importParameters = function() {
     dialog.showOpenDialog(function(f) {
-      scanParameters(f[0]);
-    });
-  };
-
-  function scanParameters(filename) {
-    var params = [];
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.trim().split('\n');
-      lines.forEach(function(l) {
-        if(l[0] != '#' && l != "") {
-          var p = {};
-          var line = l.substring(0, l.indexOf('"'));
-          p.name = line.trim();
-          var line2 = l.substring(l.indexOf('"')+1);
-          p.switch = line2.substring(0, line2.indexOf('"'));
-          var line3 = line2.substring(line2.indexOf('"')+1).trim();
-          p.type = line3[0];
-          p.values = line3.slice(1).substring(0, line3.indexOf(")")).trim();
-          var line4 = line3.slice(line3.indexOf(")")+1).trim();
-          p.conditions = line4.slice(line4.indexOf("|")+2);
-          console.log(line);
-          params.push(p);
-        }
-      });
-      $scope.Setup.file.content.content.parameters = params;
+      $scope.Setup.file.content.content.parameters = FileParser.parseParameterFile(f[0]);
       $scope.$apply();
     });
-  }
-
-  $scope.Setup.parameters = {
-    "categories": {
-      "i": {
-        "name": "Integer",
-        "value": "i"
-      },
-      "r": {
-        "name": "Real",
-        "value": "r"
-      },
-      "c": {
-        "name": "Categorical",
-        "value": "c"
-      },
-      "o": {
-        "name": "Order",
-        "value": "o"
-      }
-    }
   };
 
   // Notify parameter change
@@ -243,7 +210,7 @@ angular.module('app')
         }
       });
       if(!hasDependencies)
-        $scope.Setup.parameterTreeData[0].children.push(p1);
+      $scope.Setup.parameterTreeData[0].children.push(p1);
     });
   };
 
@@ -259,33 +226,18 @@ angular.module('app')
 
   // Once dialog is closed, load instances from file
   function loadInstances(path, type) {
-    fs.readFile(path, 'utf8', function(err, data) {
-      if (err) dialog.showMessageBox('Error', 'Unable to open file: ' + path + '\n' + err);
-      else {
-
-        // Read
-        var lines = data.split('\n');
-        var instances_temp = [];
-        lines.forEach(function(line) {
-          if(line[0] != "#") instances_temp.push(line);
-        });
-
-        // Fill corresponding array
-        var action = 'Imported ';
-        if(type == 0) {
-          $scope.Setup.file.content.content.instances.testing_uri = path;
-          action += ' testing instances from ' + fpath.basename(path);
-        }
-        else {
-          $scope.Setup.file.content.content.instances.training_uri = path;
-          action += ' training instances from ' + fpath.basename(path);
-        }
-
-        // Add history record
-        log(action);
-
-        $scope.$apply();
-      }
-    });
+    // Fill corresponding array
+    var action = 'Imported ';
+    if(type == 1) {
+      $scope.Setup.file.content.content.instances.testing_uri = path;
+      action += ' testing instances from ' + fpath.basename(path);
+    }
+    else if(type == 0) {
+      $scope.Setup.file.content.content.instances.training_uri = path;
+      action += ' training instances from ' + fpath.basename(path);
+    }
+    // Add history record
+    log(action);
+    $scope.$apply();
   }
 });

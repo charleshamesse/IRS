@@ -9,13 +9,11 @@ function svgpng_window(node) {
   return node && (node.ownerDocument && node.ownerDocument.defaultView || node.document && node || node.defaultView);
 }
 svgtopng.test = function(a) {
-  console.log('svgpng says hi' + a);
+  console.log('svgpng says hi! \n' + a);
   return 0;
 };
 svgtopng.applyCssInline = function(SVGid) {
-  console.log('Trying to apply inline CSS for ' + SVGid);
-  var svgElement = document.getElementById(SVGid); //document.getElementById(SVGid);
-  //var svg = document.querySelector('svg');
+  var svgElement = document.getElementById(SVGid);
   var doSomethingWith = function(canvas) {
     document.body.appendChild(canvas)
   };
@@ -114,7 +112,7 @@ svgtopng.getSVGImg = function(SVGid) {
   // Export to PNG
   // Copyright Simg
   var svgElement  = document.getElementById(SVGid),
-  svghtml     = '<svg id="my-svg" pointer-events="none" width="1150" height="600" style="position: absolute; margin: 0px; padding: 0px; border: 0px; transform: initial;" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgElement.innerHTML + '</svg>';
+  svghtml     = '<svg id="my-svg" pointer-events="none" width="' + svgElement.offsetWidth + '" height="600" style="position: absolute; margin: 0px; padding: 0px; border: 0px; transform: initial;" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgElement.innerHTML + '</svg>';
   svgb64      = 'data:image/svg+xml;base64,'+ btoa(unescape(encodeURIComponent(svghtml)));
   return svgb64;
 };
