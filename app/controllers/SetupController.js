@@ -73,78 +73,15 @@ angular.module('app')
   // Open candidates dialog
   $scope.Setup.openCandidates = function() {
     dialog.showOpenDialog(function(path) {
-      loadCandidates(path[0]);
+      var prelength = $scope.Setup.file.content.content.candidates.candidates.length,
+          ret = FileParser.parseCandidateFile(path[0]),
+          postlength = ret[1].length;
+      $scope.Setup.file.content.content.candidates.parameters = ret[0];
+      $scope.Setup.file.content.content.candidates.candidates = $scope.Setup.file.content.content.candidates.candidates.concat(ret[1]);
+      log("Imported " + (postlength-prelength) + " candidates from " + path);
+      $scope.$apply();
     });
   };
-
-  // Once dialog is closed, load candidates from file
-  function loadCandidates(path) {
-    fs.readFile(path, 'utf8', function(err, data) {
-      if (err) dialog.showMessageBox('Error', 'Unable to open file: ' + path + '\n' + err);
-      else {
-        // Parse candidate file
-        var lines = data.trim().split('\n'),
-        count = 0,
-        parameters = [],
-        candidates = [],
-        values = [];
-        lines.forEach(function(l) {
-          if(l[0] != '#' && l != "") {
-            // Parameter list
-            if(count == 0) {
-              parameters = l.match(/\S+/g);
-              ++count;
-            }
-            else {
-              candidates.push({
-                'label': "Candidate " + count,
-                'values': l.match(/\S+/g),
-                'develop': false,
-                'info': 'Source: "' + path + '".',
-                'lock': true
-              });
-              ++count;
-            }
-          }
-        });
-        $scope.Setup.file.content.content.candidates.parameters = parameters;
-        $scope.Setup.file.content.content.candidates.candidates = $scope.Setup.file.content.content.candidates.candidates.concat(candidates);
-
-
-        // If .ir
-        if(false) {
-          data = angular.fromJson(data);
-
-          // Get the parameters
-          $scope.Setup.file.content.content.candidates.candidates_parameters = data.parameters;
-          var i = $scope.Setup.file.content.content.candidates.candidates.length | 0;
-          var count = 0;
-
-          // For each candidate, format it and add it to the list
-          data.candidates.forEach(function(candidate) {
-            $scope.Setup.file.content.content.candidates.candidates[i] = {
-              'label': candidate.label,
-              'values': candidate.values,
-              'develop': false,
-              'info': 'Candidate source',
-              'lock': true
-            };
-            i++;
-            count++;
-          });
-
-          // Add history record
-          $scope.Setup.file.content.content.history.push({
-            'action': 'Imported ' + (count) + ' candidates',
-            'detail': '',
-            'date': new Date()
-          });
-
-          $scope.$apply();
-        }
-      }
-    });
-  }
 
   // Delete a candidate
   $scope.Setup.deleteCandidate = function(id) {
@@ -161,7 +98,6 @@ angular.module('app')
 
   // Notify candidate change
   $scope.Setup.notifyCandidateChange = function(c) {
-    console.log("hi");
     log("Edited candidate " + c.label);
   };
 
@@ -177,6 +113,7 @@ angular.module('app')
   $scope.Setup.importParameters = function() {
     dialog.showOpenDialog(function(f) {
       $scope.Setup.file.content.content.parameters = FileParser.parseParameterFile(f[0]);
+      log("Imported " +  $scope.Setup.file.content.content.parameters.length + " parameters from " + f[0]);
       $scope.$apply();
     });
   };

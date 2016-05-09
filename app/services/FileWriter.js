@@ -5,8 +5,14 @@ angular.module('app')
 
   // Globals and dependencies
   var fs = require('fs'),
-      cp = require('child_process'),
-      mkdirp = require('mkdirp');
+  cp = require('child_process'),
+  mkdirp = require('mkdirp');
+
+  // Refactor
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
 
   // Main write method
   this.write = function(path, content) {
@@ -123,40 +129,40 @@ angular.module('app')
   /** Exporting explorations to result files **/
   this.writeSingleExport = function(path, result, name, command, dates) {
     var res,
-        lines = [],
-        lines2 = [],
-        exportNow = false;
+    lines = [],
+    lines2 = [],
+    exportNow = false;
     switch(command.type) {
       case 'full':
-        lines = result.trim().split('\n');
-        angular.forEach(lines, function(l) {
-          l = l.trim();
-          if(exportNow)
-            lines2.push(l);
-          if(l == '### EXECUTING FULL EXPLORATION')
-            exportNow = true;
-        });
+      lines = result.trim().split('\n');
+      angular.forEach(lines, function(l) {
+        l = l.trim();
+        if(exportNow)
+        lines2.push(l);
+        if(l == '### EXECUTING FULL EXPLORATION')
+        exportNow = true;
+      });
       break;
       case 'ablation':
       break;
     }
     var content = {
-	"type": "results",
-	"content": {
-    "dates": dates,
-    "command": command,
-		"stdout": lines2,
-		"text": {
-			"title": name,
-			"abstract": "",
-			"author": "",
-			"firstGraph": "",
-			"secondGraph": "",
-      "conclusion": ""
-		}
-	}
-};
-  return this.write(path, JSON.stringify(content));
+      "type": "results",
+      "content": {
+        "dates": dates,
+        "command": command,
+        "stdout": lines2,
+        "text": {
+          "title": name,
+          "abstract": "",
+          "author": "",
+          "firstGraph": "",
+          "secondGraph": "",
+          "conclusion": ""
+        }
+      }
+    };
+    return this.write(path, JSON.stringify(content));
   };
 
   this.writeBatchExport = function(path, explorations) {
@@ -170,27 +176,152 @@ angular.module('app')
   }
 
   /** LaTeX Export **/
-  this.writeSingleExplorationTeXFile = function(dir, text, dates, plots, compile) {
+  function getParameterString(parameters, type) {
+    var str;
+    if(type == "short") {
+      var parameterList = "";
+      angular.forEach(parameters.list, function(p) {
+        parameterList += p.name + ', ';
+      });
+      parameterList = parameterList.slice(0, -2);
+
+      str = `
+      \\subsection{Parameter space}
+      The parameter space includes the following: ` + parameterList + `. The numbers of parameters of each type is:
+      \\begin{itemize}
+      \\item \\textbf{Integer:} ` + parameters.numbers.i + ` \\\\
+      \\item \\textbf{Real:} ` + parameters.numbers.r + `\\\\
+      \\item \\textbf{Categorical:} ` + parameters.numbers.c + `\\\\
+      \\item \\textbf{Order:} ` +  parameters.numbers.o + `
+      \\end{itemize}`;
+    }
+    else {
+      var types = {
+        "i": "Integer",
+        "c": "Categorical",
+        "o": "Order",
+        "r": "Real"
+      };
+      str = `\\subsection{Parameter space}
+      The parameter space includes the following:
+      \\begin{enumerate}`;
+      angular.forEach(parameters.list, function(p) {
+        var cdts = "";
+        if(p.conditions != "") {
+          cdts = `, ` + p.conditions.replaceAll('&', '\\&')
+          .replaceAll('%', '\\%')
+          .replaceAll('#', '\\#')
+          .replaceAll('_', '\\_')
+          .replaceAll('{', '\\{')
+          .replaceAll('}', '\\{')
+          .replaceAll('~', '\\~');
+        }
+        str += `\\item \\textbf{` + p.name + `} [` + types[p.type] + `, "` + p.switch + `"]: ` + p.values +  cdts;
+      });
+
+      str += `\\end{enumerate}`;
+    }
+    return str;
+  }
+
+  function getCandidateString(candidates) {
+    var candidateString = "";
+    angular.forEach(candidates, function(c) {
+      console.log(c);
+      var valueString = "";
+      angular.forEach(c.values, function(v) {
+        valueString += v + ', ';
+      });
+      valueString = valueString.slice(0, -2);
+      candidateString += `\\item \\textbf{` + c.label + `} [` + valueString + `] \\\\`;
+    });
+    candidateString = candidateString.slice(0, -2);
+    return candidateString;
+  }
+
+  function getParameterSelectionString(ps, type) {
+    var str = "\\" + (type == "multiple" ?  "sub" : "" ) + "subsection{Parameter selection} The following parameters were used for this exploration: ";
+    angular.forEach(ps, function(p) {
+      str += p + ", ";
+    });
+    str = str.slice(0, -2) + ".";
+
+    return str;
+  }
+
+  function getPathString(cmd, type) {
+    var str = "\\" + (type == "multiple" ?  "sub" : "" ) + `subsection{Paths}
+    The files generated for this exploration were located at:
+    \\begin{itemize}
+    \\item \\textbf{Parameters:} ` + cmd.parameterFile + ` \\\\
+    \\item \\textbf{Parameter selection:} ` + cmd.selectionFile + ` \\\\
+    \\item \\textbf{Candidates:} ` + cmd.candidatesFile + ` \\\\
+    \\item \\textbf{Log:} ` + cmd.logFile + ` \\\\
+    \\end{itemize}`;
+    return str;
+  }
+
+  function getInstanceString(cmd) {
+    var str = "\\subsection{Instances}";
+
+    var data = fs.readFileSync(cmd.instanceFile, 'utf8');
+    if (!data) dialog.showMessageBox('Error', 'Unable to open instances file: ' + cmd.instanceFile + '\n');
+
+    var lines = data.split('\n'),
+        count = 0;
+
+    angular.forEach(lines, function(l) {
+      if(l != "") ++count;
+    });
+    str += `The instances were fetched from ` + cmd.instanceFile + `, which contains ` + count + ` elements.`;
+
+    return str;
+  }
+  this.writeSingleExplorationTeXFile = function(dir, text, dates, command, scenario, plots, compile) {
     // Globals
-    var content =`\\title{` + text.title + `}
+    var parameterString = getParameterString(scenario.parameters, scenario.type),
+    candidateString = getCandidateString(scenario.candidates),
+    parameterSelectionString = "",
+    pathString = "",
+    instanceString = "";
+
+    console.log(scenario);
+
+    if(scenario.type == "long") {
+      parameterSelectionString = getParameterSelectionString(scenario.parameterSelection, "single");
+      pathString = getPathString(command, "single");
+      instanceString = getInstanceString(command);
+    }
+
+    var content =`
+    \\documentclass[12pt]{article}
+    \\title{` + text.title + `}
     \\author{` + text.author + `}
     \\date{\\today}
-    \\documentclass[12pt]{article}
     \\usepackage{float}
     \\usepackage{graphicx}
     \\usepackage[a4paper,left=2.2cm,right=2.2cm,top=2.6cm,bottom=2.6cm]{geometry}
+    \\setlength{\\parindent}{0pt}
     \\begin{document}
     \\maketitle
     \\begin{abstract}
     ` + text.abstract + `
     \\end{abstract}
     \\section{Scenario}
-    Scenario data
+    ` + parameterString + `
+    ` + instanceString + `
+    \\subsection{Hook-run method}
+    The hook-run method was located at ` + command.hookRun + `.
     \\section{Exploration}
-    The exploration was carried out using Full Exploration on 2 CPU cores from ` +  $filter('date')(dates[0], 'medium')  + ` to ` +  $filter('date')(dates[1], 'medium') + `. The parameters used in this exploration are:\\\\
-    ...\\\\
-    And the initial candidates:\\\\
-    ...
+    \\subsection{Timing}
+    The exploration was carried out using \\textsc{` + command.type + `} on ` + command.parallel + ` CPU cores from ` +  $filter('date')(dates[0], 'medium')  + ` to ` +  $filter('date')(dates[1], 'medium') + `.
+    ` + parameterSelectionString + `
+    \\subsection{Initial candidates}
+    The initial candidates for this exploration were (the parameter values are given in the same order as the parameter list in the previous section):
+    \\begin{enumerate}
+    ` + candidateString + `
+    \\end{enumerate}
+    ` + pathString + `
     \\section{Results}
     \\begin{figure}[H]
     \\centering
@@ -227,5 +358,113 @@ angular.module('app')
 
     };
   }
+
+
+
+  // Multiple export
+
+  this.writeMultipleExplorationTeXFile = function(dir, explorations, text, scenario, compile) {
+    // Globals
+    console.log(scenario);
+    var parameterString = getParameterString(scenario.parameters, scenario.type),
+    candidateString = getCandidateString(scenario.candidates),
+    parameterSelectionString = "",
+    pathString = "",
+    instanceString = "";
+
+    if(scenario.type == "long") {
+      parameterSelectionString = getParameterSelectionString(scenario.parameterSelection, "multiple");
+      pathString = getPathString(explorations[0].command, "multiple");
+      instanceString = getInstanceString(explorations[0].command);
+    }
+
+    var content =`
+    \\documentclass[12pt]{article}
+    \\title{` + text.title + `}
+    \\author{` + text.author + `}
+    \\date{\\today}
+    \\usepackage{float}
+    \\usepackage{graphicx}
+    \\usepackage[a4paper,left=2.2cm,right=2.2cm,top=2.6cm,bottom=2.6cm]{geometry}
+    \\setlength{\\parindent}{0pt}
+    \\begin{document}
+    \\maketitle
+    \\begin{abstract}
+    ` + text.abstract + `
+    \\end{abstract}
+    \\section{Scenario}
+    ` + parameterString + `
+    ` + instanceString + `
+    \\subsection{Hook-run method}
+    The hook-run method was located at ` + explorations[0].command.hookRun + `.
+    \\section{Explorations}`;
+
+    angular.forEach(explorations, function(e) {
+      content += `\\subsection{` + e.name + `}
+      \\subsubsection{Timing}
+      The exploration was carried out using \\textsc{` + e.command.type + `} on ` + e.command.parallel + ` CPU cores from ` +  $filter('date')(e.dates[0], 'medium')  + ` to ` +  $filter('date')(e.dates[1], 'medium') + `.
+      ` + parameterSelectionString + `
+      \\subsubsection{Initial candidates}
+      The initial candidates for this exploration were (the parameter values are given in the same order as the parameter list in the previous section):
+      \\begin{enumerate}
+      ` + candidateString + `
+      \\end{enumerate}
+      ` + pathString + `
+      \\subsubsection{Results}
+      \\begin{figure}[H]
+      \\centering
+      \\includegraphics[width=\\linewidth]{` + dir + `` + e.plots[0] + `}
+      \\end{figure}` + e.text.firstGraph + `\\begin{figure}[H]
+      \\centering
+      \\includegraphics[width=\\linewidth]{` + dir + `` + e.plots[1] + `}
+      \\end{figure}` + e.text.secondGraph;
+
+    });
+/*
+    content += `\\subsection{Timing}
+    The exploration was carried out using \\textsc{` + command.type + `} on ` + command.parallel + ` CPU cores from ` +  $filter('date')(dates[0], 'medium')  + ` to ` +  $filter('date')(dates[1], 'medium') + `.
+    ` + parameterSelectionString + `
+    \\subsection{Initial candidates}
+    The initial candidates for this exploration were (the parameter values are given in the same order as the parameter list in the previous section):
+    \\begin{enumerate}
+    ` + candidateString + `
+    \\end{enumerate}
+    ` + pathString + `
+    \\section{Results}
+    \\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=\\linewidth]{` + dir + `` + plots[0] + `}
+    \\end{figure}` + text.firstGraph + `\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=\\linewidth]{` + dir + `` + plots[1] + `}
+    \\end{figure}` + text.secondGraph;
+*/
+    content += `
+    \\section{Conclusion}
+    ` + text.conclusion + `
+    \\end{document}`;
+
+    this.write(dir + "report.tex", content);
+    // Compile
+    if(compile) {
+      var pdflatex  = cp.exec('pdflatex -interaction=nonstopmode -output-directory="' + dir + '" "' + dir + 'report.tex"');
+
+      pdflatex.stdout.on('data', function(data) {
+        console.log(data);
+      });
+
+      pdflatex.stderr.on('data', function(data) {
+        console.log(data);
+      });
+
+      pdflatex.on('exit', function(code) {
+        console.log("pdftex exit code:" + code);
+      });
+
+      console.log("report.pdf created?" + this.fileExists(dir + "report.pdf"));
+
+
+    }
+  };
 
 });

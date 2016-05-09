@@ -379,8 +379,9 @@ angular.module('app')
             svg.selectAll("*").remove();
 
             // set up variables
-            var width, height, max;
-            width = 170*getDepth(data);  //d3.select(iElement[0])[0][0].offsetWidth;
+            var width, height, max, dataDepth;
+            dataDepth = getDepth(data);
+            width = 180*dataDepth;  //d3.select(iElement[0])[0][0].offsetWidth;
             height = 500;
             svg.attr('height', height);
             svg.attr('width', width);
@@ -390,7 +391,7 @@ angular.module('app')
 
             // ************** Generate the tree diagram	 *****************
             var margin = {top: 0, right: 120, bottom: 0, left: 120},
-            width = 230*4 - margin.right - margin.left, //groups.length
+            width = 180*dataDepth - margin.right - margin.left, //groups.length
             height = 500 - margin.top - margin.bottom;
 
             var i = 0,

@@ -13,7 +13,7 @@
     <div class="col-sm-12">
       <div style="white-space:nowrap">
         <label for="Title">Author:</label>
-        <input ng-model="Results.file.content.content.text.author"  class="irs discreet" placeholder="Insert author names here.."></textarea>
+        <input ng-model="Results.file.content.content.text.author"  class="irs discreet" placeholder="Insert author name here.."></textarea>
       </div>
     </div>
     <div class="col-sm-12">
@@ -48,8 +48,8 @@
       <h2>Scenario review</h2>
     </div>
     <div class="col-sm-12">
-      <input type="radio" checked name="scenarioExportType" value="short"> <strong>Short version: </strong>number of parameters of each type and selected candidates. <br />
-      <input type="radio" name="scenarioExportType" value="long"> <strong>Long version: </strong>complete parameter space description, number of instances, file paths and selected candidates
+      <input type="radio" checked ng-model="Results.scenarioExportType" name="scenarioExportType" value="short"> <strong>Short version: </strong>number of parameters of each type and selected candidates. <br />
+      <input type="radio" ng-model="Results.scenarioExportType"  name="scenarioExportType" value="long"> <strong>Long version: </strong>complete parameter space description, number of instances, file paths and selected candidates
     </div>
 
 </div>

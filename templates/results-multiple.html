@@ -1,16 +1,67 @@
 <script src="assets/js/svgtopng.js"></script>
-<div class="irs padding" ng-controller="ResultsMultipleController" ng-init="ResultsMultiple.file = file">
+<div class="irs padding" ng-controller="ResultsMultipleController" ng-init="ResultsMultiple.file = file; ResultsMultiple.prepare();">
   <div class="row">
+    <div class="col-sm-9 col-xs-6">
+      <div style="white-space:nowrap">
+        <label  for="Title"><h2>Title:</h2></label>
+        <input id="Title" ng-model="ResultsMultiple.file.content.content.text.title" class="irs h2" type="text" placeholder="Insert title here..">
+      </div>
+    </div>
+    <div class="col-sm-3 col-xs-6">
+      <button class="irs large" ng-click="ResultsMultiple.exportToLatex();">Export to LaTeX</button>
+    </div>
     <div class="col-sm-12">
-    <h2>Multiple results</h2>
+      <div style="white-space:nowrap">
+        <label for="Title">Author:</label>
+        <input ng-model="ResultsMultiple.file.content.content.text.author"  class="irs discreet" placeholder="Insert author name here.."></textarea>
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <textarea ng-model="ResultsMultiple.file.content.content.text.abstract" rows="2" cols="50"  class="irs comment" placeholder="Insert abstract here.."></textarea>
     </div>
   </div>
+
+  <!-- Explorations -->
   <div class="row" ng-repeat="e in file.content.content.explorations">
-    <div class="col-sm-12">
-      <h4>{{ e.name }}</h4>
-      <div class="well">
-      {{ e | json }}
+
+    <div class="col-sm-12 col-xs-12">
+      <div style="white-space:nowrap">
+        <label  for="Title"><h2>#{{ $index+1 }}:</h2></label>
+        <input id="Title" ng-model="e.name" class="irs h2" type="text" placeholder="Insert title here..">
+      </div>
     </div>
+    <div class="col-sm-12">
+      <h3>Line plot</h3>
+      <d3-ordinal-line data="e.d3Data" id="linePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-bars>
+      </div>
+      <div class="col-sm-12">
+        <textarea ng-model="e.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
+      </div>
+      <div class="col-sm-12">
+        <h3>Tree</h3>
+        <div style="overflow-x: auto;">
+          <d3-horizontal-tree data="e.d3TreeData" id="treePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-horizontal-tree>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <textarea ng-model="e.text.secondGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
+      </div>
+    </div>
+
+    <!-- Conclusion -->
+    <div class="row">
+      <div class="col-sm-12">
+        <h2>Conclusion</h2>
+      </div>
+      <div class="col-sm-12">
+        <textarea ng-model="ResultsMultiple.file.content.content.text.conclusion" rows="6" cols="50"  class="irs comment" placeholder="Insert conclusion here.."></textarea>
+      </div>
+      <div class="col-sm-12">
+        <h2>Scenario review</h2>
+      </div>
+      <div class="col-sm-12">
+        <input type="radio" checked ng-model="ResultsMultiple.scenarioExportType" name="scenarioExportType" value="short"> <strong>Short version: </strong>number of parameters of each type and selected candidates. <br />
+        <input type="radio" ng-model="ResultsMultiple.scenarioExportType"  name="scenarioExportType" value="long"> <strong>Long version: </strong>complete parameter space description, number of instances, file paths and selected candidates
+      </div>
     </div>
   </div>
-</div>

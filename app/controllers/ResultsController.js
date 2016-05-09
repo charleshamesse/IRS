@@ -1,8 +1,9 @@
 angular.module('app')
-.controller('ResultsController', function($scope, ResultParser, FileWriter) {
+.controller('ResultsController', function($scope, $filter, ResultParser, FileWriter, FileParser) {
   // Globals
   $scope.Results = {
-    "file": $scope.file
+    "file": $scope.file,
+    "scenarioExportType": "long"
   };
   require('svgtopng');
   var remote = require('remote');
@@ -27,14 +28,30 @@ angular.module('app')
     $scope.d3TreeData = ResultParser.parseForTree(stdout);
   }
 
-  var getShortScenarioInfo = function() {
-    console.log($scope.Results.file);
+  var getScenarioInfo = function(type) {
+    var parameters = FileParser.parseParameterFile($scope.Results.file.content.content.command.parameterFile),
+        candidates = FileParser.parseCandidateFile($scope.Results.file.content.content.command.candidatesFile)[1]
+        parameterSelection = FileParser.parseParameterSelectionFile($scope.Results.file.content.content.command.selectionFile);
+    var ret = {
+      "type": type,
+      "parameters": {
+        "list": parameters,
+        "numbers": {
+          "i": $filter('filter')(parameters, {type: 'i'}, true).length,
+          "c": $filter('filter')(parameters, {type: 'c'}, true).length,
+          "r": $filter('filter')(parameters, {type: 'r'}, true).length,
+          "o": $filter('filter')(parameters, {type: 'o'}, true).length
+        }
+      },
+      "candidates": candidates,
+      "parameterSelection": parameterSelection
+    };
+    return ret;
   }
 
 
   // Export to LaTex
   $scope.Results.exportToLatex = function() {
-    getShortScenarioInfo();
     // Make resource dir
     var options = {
       "title": "Output directory",
@@ -59,6 +76,6 @@ angular.module('app')
       console.log(err);
     });
     // Hand it to writer
-    FileWriter.writeSingleExplorationTeXFile(fpath, $scope.Results.file.content.content.text, $scope.Results.file.content.content.dates, ["line-plot.png", "tree-plot.png"], fpath, true);
-  }
+    FileWriter.writeSingleExplorationTeXFile(fpath, $scope.Results.file.content.content.text, $scope.Results.file.content.content.dates, $scope.Results.file.content.content.command, getScenarioInfo($scope.Results.scenarioExportType), ["line-plot.png", "tree-plot.png"], true);
+  };
 });
