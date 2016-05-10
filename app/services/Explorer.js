@@ -6,6 +6,7 @@ angular.module('app')
   // Globals and dependencies
   var fs = require('fs'),
       cp = require('child_process'),
+      rscript = "",
       Explorer = {
         "terminalOutput": "",
         "exitCode": ""
@@ -14,6 +15,11 @@ angular.module('app')
       finished = false,
       startDate,
       stopDate;
+
+  // Init
+  this.setRscript = function(p) {
+    rscript = p;
+  }
 
   // Register observer
   this.registerObserverCallback = function(callback){
@@ -29,7 +35,7 @@ angular.module('app')
     Explorer.terminalOutput = "";
     var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
     startDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0,-1);
-    var cmd  = cp.exec('Rscript ../work/explore.R '
+    var cmd  = cp.exec('Rscript "' + rscript + '" '
     + '--parameter-file "' + parameters.parameterFile + '" '
     + '--sel-param-file "' + parameters.selectionFile + '" '
     + '--candidates-file "' + parameters.candidatesFile + '" '

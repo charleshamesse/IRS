@@ -18,8 +18,12 @@ angular.module('app')
   FileExplorer.tree;
 
   // Init
+  FileExplorer.setBasePath = function(path) {
+    bpath = path;
+    FileExplorer.refresh();
+  }
   FileExplorer.refresh = function() {
-    bpath = homeDir() + '/Documents/EPB';
+    if(!bpath) bpath = homeDir();
     FileExplorer.rootNode = {
       "type": "dir",
       "name": path.basename(bpath),

@@ -7,12 +7,20 @@ angular.module('app')
   var path = require("path");
   var remote = require('remote');
   var dialog = remote.require('dialog');
-  var options = {filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
-  var optionsCreate = {title: "Create", filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
+  var defaultPath = require('home-dir');
+  var options = {defaultPath: defaultPath, filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
+  var optionsCreate = {title: "Create", defaultPath: defaultPath, filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
 
   // List of open files
   FileManager.filesOpened = [];
 
+
+  // Init
+  FileManager.setBasePath = function(p) {
+    defaultPath = p;
+    options = {defaultPath: defaultPath, filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
+    optionsCreate = {title: "Create", defaultPath: defaultPath, filters: [{ name: 'IR Studio files', extensions: ['ir'] }]};
+  };
   // Create file
   FileManager.createSetupFile = function() {
     var fpath = dialog.showSaveDialog(optionsCreate);
@@ -125,7 +133,7 @@ angular.module('app')
   FileManager.close = function(index) {
     // Ask for saving - or save
     var f = FileManager.filesOpened[index];
-    FileManager.save(f);
+    //FileManager.save(f);
 
     // Switch view if needed
     if(f.active == true) {

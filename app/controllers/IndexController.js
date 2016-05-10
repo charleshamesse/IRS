@@ -1,12 +1,78 @@
 angular.module('app')
 .controller('IndexController', function($scope, FileExplorer, FileManager) {
 
+  // Globals
+  const remote = require('remote');
+  const app = remote.app;
+  const Menu = remote.Menu;
+  const MenuItem = remote.MenuItem;
+  const fs = require('fs');
+  const mpath = require('path');
+  const cfgpath = app.getPath("userData") + mpath.sep + "cfg.json";
+  const dialog = remote.require('dialog');
   $scope.FileExplorer = FileExplorer;
   $scope.FileManager = FileManager;
 
-  const remote = require('remote');
+  // Config
+  $scope.Main = {
+    "cfg": {
+      "workspace": "",
+      "rscript": ""
+    }
+  };
 
-  // To-do:
+  var cfgExists = false;
+  try {
+    if(fs.statSync(cfgpath).isFile()) {
+      cfgExists = true;
+      var data;
+      if((data = fs.readFileSync(cfgpath, 'utf8'))) {
+        $scope.Main.cfg = angular.fromJson(data);
+        // Set file explorer root node
+        console.log($scope.Main.cfg.workspace);
+        $scope.FileExplorer.setBasePath($scope.Main.cfg.workspace);
+        $scope.FileManager.setBasePath($scope.Main.cfg.workspace);
+        console.log("hi");
+      }
+    }
+  }
+  catch (e) {
+    console.log("There isn't any config file" + e);
+  }
+  if(!cfgExists) {
+    $scope.Main.displayCfg = true;
+  }
+
+  $scope.Main.openWorkspace = function() {
+    var dir = dialog.showOpenDialog({properties: ["openDirectory", "createDirectory"]});
+    if(!dir) return 0;
+    $scope.Main.cfgWorkspace = dir[0];
+  }
+
+  $scope.Main.openRscript = function() {
+    var file = dialog.showOpenDialog({properties: ["openFile"]});
+    if(!file) return 0;
+    $scope.Main.cfgRscript = file[0];
+  }
+  $scope.Main.updateConfig = function() {
+    var success = false,
+        data = {
+          "workspace": $scope.Main.cfgWorkspace,
+          "rscript": $scope.Main.cfgRscript
+        };
+    try {
+      // write on config file, exists it or not.
+      fs.writeFileSync(cfgpath, JSON.stringify(data), 'utf8');
+      success = true;
+    }
+    catch(e) {
+      console.log(e);
+    }
+    $scope.Main.configUpdated = success;
+    return success;
+  };
+
+  // Menu
   var template = [
     {
       label: 'File',
@@ -15,10 +81,12 @@ angular.module('app')
           label: 'New Scenario',
           click: function(item, focusedWindow) {
             var path = $scope.FileManager.createSetupFile();
-            var file = $scope.FileExplorer.open(path);
-            $scope.FileManager.openFile(file);
-            $scope.FileExplorer.refresh();
-            $scope.$apply();
+            if(path) var file = $scope.FileExplorer.open(path);
+            if(file) {
+              $scope.FileManager.openFile(file);
+              $scope.FileExplorer.refresh();
+              $scope.$apply();
+            }
           },
           accelerator: 'CmdOrCtrl+Option+S'
         },
@@ -26,10 +94,12 @@ angular.module('app')
           label: 'New Exploration',
           click: function(item, focusedWindow) {
             var path = $scope.FileManager.createExplorationFile();
-            var file = $scope.FileExplorer.open(path);
-            $scope.FileManager.openFile(file);
-            $scope.FileExplorer.refresh();
-            $scope.$apply();
+            if(path) var file = $scope.FileExplorer.open(path);
+            if(file) {
+              $scope.FileManager.openFile(file);
+              $scope.FileExplorer.refresh();
+              $scope.$apply();
+            }
           },
           accelerator: 'CmdOrCtrl+Option+E'
         },
@@ -221,8 +291,6 @@ angular.module('app')
       }
     );
   }
-  const Menu = remote.Menu;
-  const MenuItem = remote.MenuItem;
 
   var menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);

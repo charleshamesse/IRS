@@ -70,10 +70,10 @@ angular.module('app')
     var linePlotBase64Data = svgtopng.getCanvasImg('linePlot-' + $scope.Results.file.name).replace(/^data:image\/png;base64,/, "");
     var treePlotBase64Data = svgtopng.getCanvasImg('treePlot-' + $scope.Results.file.name).replace(/^data:image\/png;base64,/, "");
     fs.writeFile(fpath + "line-plot.png", linePlotBase64Data, 'base64', function(err) {
-      console.log(err);
+      if(err) console.log(err);
     });
     fs.writeFile(fpath + "tree-plot.png", treePlotBase64Data, 'base64', function(err) {
-      console.log(err);
+      if(err) console.log(err);
     });
     // Hand it to writer
     FileWriter.writeSingleExplorationTeXFile(fpath, $scope.Results.file.content.content.text, $scope.Results.file.content.content.dates, $scope.Results.file.content.content.command, getScenarioInfo($scope.Results.scenarioExportType), ["line-plot.png", "tree-plot.png"], true);

@@ -23,9 +23,8 @@ angular.module('app')
 
   // Content generation
   this.makeResourcesDir = function(path) {
-    mkdirp(path, function(err) {
-      if(err) console.log(err);
-    });
+    var dir = mkdirp.sync(path);
+    if(!dir) alert('Error: IR Studio could not create the exploration directory.');
   }
 
   this.fileExists = function(path) {

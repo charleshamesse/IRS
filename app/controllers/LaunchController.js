@@ -47,6 +47,8 @@ angular.module('app')
       "value": "o"
     }
   };
+  Explorer.setRscript($scope.Main.cfg.rscript);
+  console.log($scope.Main.cfg.rscript);
 
   // Dependencies
   var fs = require('fs');
@@ -225,6 +227,7 @@ angular.module('app')
         $scope.$apply();
       }
       else {
+        // Push and save file
         $scope.Launch.dates = Explorer.getDates();
         $scope.Launch.file.content.content.explorations.push({
           "name": $scope.Launch.explorationName,
@@ -232,6 +235,7 @@ angular.module('app')
           "dates": $scope.Launch.dates,
           "dir": resourcesDir
         });
+        $scope.FileManager.save();
       }
     };
 

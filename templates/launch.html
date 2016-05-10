@@ -170,7 +170,7 @@
         The following explorations have already been executed in this context:
         <div class="spacer small"></div>
         <div class="list-group">
-          <span class="list-group-item irs" ng-class="{'list-group-hover': e.selected}" ng-click="e.selected = !e.selected" ng-repeat="e in Launch.file.content.content.explorations">
+          <span class="list-group-item irs" ng-class="{'list-group-hover': e.selected}" ng-click="e.selected = !e.selected" ng-repeat="e in Launch.file.content.content.explorations track by $index">
             <h4 class="list-group-item-heading"><input ng-model="e.selected" type="checkbox" /> {{ e.name }} <small>{{ e.command.type }}</small></h4>
             <p class="list-group-item-text">
               From {{ e.dates[0] | date:'medium'}} to {{ e.dates[1] | date:'medium'}}<br />
