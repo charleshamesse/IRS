@@ -124,17 +124,19 @@ angular.module('app')
   // Close
   FileManager.close = function(index) {
     // Ask for saving - or save
-    FileManager.save(FileManager.filesOpened[index]);
+    var f = FileManager.filesOpened[index];
+    FileManager.save(f);
 
+    // Switch view if needed
+    if(f.active == true) {
+      if(index > 0)
+        FileManager.activateFile(FileManager.filesOpened[index-1]);
+      else if(FileManager.filesOpened.length > 1)
+        FileManager.activateFile(FileManager.filesOpened[index+1]);
+    }
     // Close file
-    FileManager.filesOpened[index].isOpened = false;
+    f.isOpened = false;
     FileManager.filesOpened.splice(index, 1);
-    if(FileManager.filesOpened[index-1] != null) {
-      FileManager.viewFile(FileManager.filesOpened[index-1]);
-    }
-    else if (FileManager.filesOpened[index] != null) {
-      FileManager.viewFile(FileManager.filesOpened[index+1]);
-    }
   };
 
   return FileManager;
