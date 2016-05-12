@@ -351,7 +351,7 @@ angular.module('app')
           }, true);
 
           // Get the tree depth. It is a basic find-max algorithm to find children who have children themse
-          var getDepth = function(data) {
+          var _getDepth = function(data) {
             depth = 1;
 
             node = data[0];
@@ -373,6 +373,21 @@ angular.module('app')
             return depth;
           }
 
+          getDepth = function(data, depth) {
+            var node = data;
+            var max = 0;
+            if(node.children.length != 0) {
+              ++depth;
+              var rootDepth = depth;
+              angular.forEach(node.children, function(child) {
+                if(child.children) {
+                  var m = getDepth(child, rootDepth);
+                  if(m > depth) depth = m;
+                }
+              });
+            }
+            return depth;
+          };
 
           scope.render = function(data) {
             // clear out everything in the svg to render a fresh version
@@ -380,7 +395,7 @@ angular.module('app')
 
             // set up variables
             var width, height, max, dataDepth;
-            dataDepth = getDepth(data);
+            dataDepth = getDepth(data[0], 1);//getDepth(data);
             width = 180*dataDepth;  //d3.select(iElement[0])[0][0].offsetWidth;
             height = 500;
             svg.attr('height', height);

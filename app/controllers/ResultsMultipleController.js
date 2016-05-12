@@ -23,9 +23,8 @@ angular.module('app')
       if(!output) return 0;
       e.stdout = output.trim();
       e.d3Data = ResultParser.parseFullExploration(e.stdout);
-      e.d3TreeData = ResultParser.parseForTree(e.stdout);
+      e.d3TreeData = ResultParser.parseForTree(e.stdout, FileParser.parseParameterFile(e.command.parameterFile));
 
-      console.log(e);
     });
 
   };

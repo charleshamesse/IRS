@@ -29,10 +29,8 @@ angular.module('app')
       if((data = fs.readFileSync(cfgpath, 'utf8'))) {
         $scope.Main.cfg = angular.fromJson(data);
         // Set file explorer root node
-        console.log($scope.Main.cfg.workspace);
         $scope.FileExplorer.setBasePath($scope.Main.cfg.workspace);
         $scope.FileManager.setBasePath($scope.Main.cfg.workspace);
-        console.log("hi");
       }
     }
   }
