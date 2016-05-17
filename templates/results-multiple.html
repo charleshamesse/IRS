@@ -38,13 +38,22 @@
         <textarea ng-model="e.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
       </div>
       <div class="col-sm-12">
-        <h3>Tree</h3>
+        <h3>Tree plot</h3>
         <div style="overflow-x: auto;">
-          <d3-horizontal-tree data="e.d3TreeData" id="treePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-horizontal-tree>
+          <d3-vertical-tree data="e.d3TreeData" id="treePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-vertical-tree>
         </div>
       </div>
       <div class="col-sm-12">
         <textarea ng-model="e.text.secondGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
+      </div>
+      <div class="col-sm-12">
+        <h3>Radial tree plot</h3>
+        <div style="overflow-x: auto;">
+          <d3-radial-tree data="e.d3TreeData" id="treePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-radial-tree>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <textarea ng-model="e.text.thidGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
       </div>
     </div>
 

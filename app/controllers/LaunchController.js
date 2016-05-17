@@ -130,7 +130,7 @@ angular.module('app')
 
         // 4. Apply
         $scope.Launch.scenarioLoaded = true;
-        $scope.$apply();
+        //$scope.$apply();
 
         // 5. Log
         log("Loaded scenario " + mpath.basename($scope.Launch.file.content.content.scenario_uri), "Complete scenario path: " + $scope.Launch.file.content.content.scenario_uri);
@@ -262,6 +262,7 @@ angular.module('app')
       FileWriter.writeSingleExport(fpath, Explorer.output(), $scope.Launch.explorationName, $scope.Launch.command, $scope.Launch.dates);
       var file = $scope.FileExplorer.open(fpath);
       $scope.FileManager.openFile(file);
+      $scope.FileExplorer.refresh();
     }
   }
 

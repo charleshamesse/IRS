@@ -239,7 +239,7 @@ angular.module('app')
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
-        .attr("transform", "rotate(-65)" );
+        .attr("transform", "rotate(-65)" )
         svg.append("svg:g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + (MARGINS.left) + "," + (MARGINS.top-MARGINS.bottom) +")")
@@ -349,29 +349,6 @@ angular.module('app')
             var newDataCopy = JSON.parse(JSON.stringify(newData));
             return scope.render(newDataCopy);
           }, true);
-
-          // Get the tree depth. It is a basic find-max algorithm to find children who have children themse
-          var _getDepth = function(data) {
-            depth = 1;
-
-            node = data[0];
-
-            while(node.children != null && node.children.length != 0 ) {
-              depth++;
-              max = 0;
-              idx = 0;
-              i = 0;
-              angular.forEach(node.children, function(child) {
-                if(child.children.length > max) {
-                  max = child.children.length;
-                  idx = i;
-                }
-                i++;
-              });
-              node = node.children[idx];
-            }
-            return depth;
-          }
 
           getDepth = function(data, depth) {
             var node = data;
@@ -527,6 +504,284 @@ angular.module('app')
                 d._children = null;
               }
               update(d);
+            }
+          };
+        }
+      };
+    }]) .directive('d3VerticalTree', ['d3', function(d3) {
+      return {
+        restrict: 'EA',
+        scope: {
+          data: "=",
+          label: "@",
+        },
+        link: function(scope, iElement, iAttrs) {
+          // create the svg to contain our visualization
+          var svg = d3.select(iElement[0])
+          .append("svg")
+          .attr("width", "100%");
+
+          // make the visualization responsive by watching for changes in window size
+          window.onresize = function() {
+            return scope.$apply();
+          };
+          scope.$watch(function() {
+            return angular.element(window)[0].innerWidth;
+          }, function() {
+            var newDataCopy = JSON.parse(JSON.stringify(scope.data));
+            return scope.render(newDataCopy);
+          });
+
+          // watch the data source for changes to dynamically update the visualization
+          scope.$watch('data', function(newData, oldData) {
+            var newDataCopy = JSON.parse(JSON.stringify(newData));
+            return scope.render(newDataCopy);
+          }, true);
+
+
+          getDepth = function(data, depth) {
+            var node = data;
+            var max = 0;
+            if(node.children.length != 0) {
+              ++depth;
+              var rootDepth = depth;
+              angular.forEach(node.children, function(child) {
+                if(child.children) {
+                  var m = getDepth(child, rootDepth);
+                  if(m > depth) depth = m;
+                }
+              });
+            }
+            return depth;
+          };
+
+          scope.render = function(data) {
+            // clear out everything in the svg to render a fresh version
+            svg.selectAll("*").remove();
+
+            // set up variables
+            var width, height, max;
+            width = data[0].children.length * 60;
+            height = getDepth(data[0], 1)*100;
+            svg.attr('height', height);
+            svg.attr('width', width);
+
+            // Data management
+            var treeData = data;
+
+            // ************** Generate the tree diagram	 *****************
+            var margin = {top: 10, right: 10, bottom: 10, left: 10},
+            width = width - margin.right - margin.left, //groups.length
+            height = height - margin.top - margin.bottom;
+
+            var i = 0,
+            duration = 750,
+            root;
+
+            var tree = d3.layout.tree()
+            .size([width, height]);
+
+            var xOffset = 30;
+            var diagonal = d3.svg.diagonal()
+            .projection(function(d) { return [d.x, d.y]; });
+
+            root = treeData[0];
+            root.x0 = width / 2;
+            root.y0 = 0;
+            update(root);
+
+
+            function update(source) {
+              // Compute the new tree layout.
+              var nodes = tree.nodes(root).reverse(),
+              links = tree.links(nodes);
+
+              // Normalize for fixed-depth.
+              nodes.forEach(function(d) { d.y = d.depth * 100 + xOffset; });
+
+              // Update the nodes…
+              var node = svg.selectAll("g.node")
+              .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+              // Enter any new nodes at the parent's previous position.
+              var nodeEnter = node.enter().append("g")
+              .attr("class", "node")
+              .attr("transform", function(d) { return "translate(" + source.x0 + "," + source.y0 + ")"; })
+              .on("click", click);
+
+              nodeEnter.append("circle")
+              .attr("r", function(d) { return  "20px" })
+              .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+              nodeEnter.append("text")
+              .attr("y", function(d) { return 0; })
+              .attr("dy", function(d) { return  ((source.children.indexOf(d) % 2) == 0 ? -(d.score/40000*20+15) : (d.score/40000*20+15)) + "px" })//".35em")
+              .attr("text-anchor", "middle")
+              .text(function(d) { return d.name; })
+              .style("fill-opacity", 1e-6);
+
+              // Transition nodes to their new position.
+
+              var nodeUpdate = node.transition()
+              .duration(duration)
+              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+              nodeUpdate.select("circle")
+              .attr("r", function(d) { return  (d.score/30000*20) + "px" })
+              .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+              nodeUpdate.select("text")
+              .style("fill-opacity", 1);
+
+              // Transition exiting nodes to the parent's new position.
+              var nodeExit = node.exit().transition()
+              .duration(duration)
+              .attr("transform", function(d) { return "translate(" + source.x + "," + source.y + ")"; })
+              .remove();
+
+              nodeExit.select("circle")
+              .attr("r", "0px");
+
+              nodeExit.select("text")
+              .style("fill-opacity", 1e-6);
+
+              // Update the links…
+              var link = svg.selectAll("path.link")
+              .data(links, function(d) { return d.target.id; });
+
+              // Enter any new links at the parent's previous position.
+              link.enter().insert("path", "g")
+              .attr("class", "link")
+              .attr("d", function(d) {
+                var o = {x:source.x0, y: source.y0};
+                return diagonal({source: o, target: o});
+              });
+
+              // Transition links to their new position.
+              link.transition()
+              .duration(duration)
+              .attr("d", diagonal);
+
+              // Transition exiting nodes to the parent's new position.
+              link.exit().transition()
+              .duration(duration)
+              .attr("d", function(d) {
+                var o = {x: source.x, y: source.y};
+                return diagonal({source: o, target: o});
+              })
+              .remove();
+
+              // Stash the old positions for transition.
+              nodes.forEach(function(d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+              });
+
+            }
+
+            // Toggle children on click.
+            function click(d) {
+              if (d.children) {
+                d._children = d.children;
+                d.children = null;
+              } else {
+                d.children = d._children;
+                d._children = null;
+              }
+              update(d);
+            }
+          };
+        }
+      };
+    }]).directive('d3RadialTree', ['d3', function(d3) {
+      return {
+        restrict: 'EA',
+        scope: {
+          data: "=",
+          label: "@",
+        },
+        link: function(scope, iElement, iAttrs) {
+          // create the svg to contain our visualization
+          var svg = d3.select(iElement[0])
+          .append("svg")
+          .attr("width", "100%");
+
+          // make the visualization responsive by watching for changes in window size
+          window.onresize = function() {
+            return scope.$apply();
+          };
+          scope.$watch(function() {
+            return angular.element(window)[0].innerWidth;
+          }, function() {
+            var newDataCopy = JSON.parse(JSON.stringify(scope.data));
+            return scope.render(newDataCopy);
+          });
+
+          // watch the data source for changes to dynamically update the visualization
+          scope.$watch('data', function(newData, oldData) {
+            var newDataCopy = JSON.parse(JSON.stringify(newData));
+            return scope.render(newDataCopy);
+          }, true);
+
+          scope.render = function(data) {
+            // clear out everything in the svg to render a fresh version
+            svg.selectAll("*").remove();
+
+            // set up variables
+            var diameter = 960;
+            svg.attr("width", diameter)
+            .attr("height", diameter - 150)
+            .append("g")
+            .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+            // Data management
+            var treeData = data;
+
+            var i = 0,
+            duration = 750,
+            root;
+
+            var tree = d3.layout.tree()
+            .size([360, diameter / 2 - 120])
+            .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+            var diagonal = d3.svg.diagonal.radial()
+            .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+
+            root = treeData[0];
+            root.x0 = diameter / 2;
+            root.y0 = diameter / 2;
+
+            update(root);
+
+            function update(source) {
+              var nodes = tree.nodes(root),
+              links = tree.links(nodes);
+
+              var link = svg.selectAll(".link")
+              .data(links)
+              .enter().append("path")
+              .attr("class", "link")
+              .attr("d", diagonal)
+              .attr("transform", function(d) { return "translate("+root.x0+", "+root.y0+")"; });
+
+              var node = svg.selectAll(".node")
+              .data(nodes)
+              .enter().append("g")
+              .attr("class", "node")
+              .attr("transform", function(d) { return "translate("+root.x0+", "+root.y0+")rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+
+              node.append("circle")
+              .attr("r", function(d) { return  (d.score/40000*20) + "px" })
+
+              node.append("text")
+              .attr("dy", ".31em")
+              .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+              .attr("transform", function(d) { return (d.x < 180 ? "translate(20)" : "rotate(180)translate(-20)"); })
+              .text(function(d) { return d.name; });
+
+              d3.select(self.frameElement).style("height", diameter - 150 + "px");
+
             }
           };
         }

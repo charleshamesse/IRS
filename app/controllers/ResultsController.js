@@ -24,8 +24,9 @@ angular.module('app')
   }
 
   var makePlots = function(stdout) {
+    var parameters = FileParser.parseParameterFile($scope.Results.file.content.content.command.parameterFile);
     $scope.d3Data = ResultParser.parseFullExploration(stdout);
-    $scope.d3TreeData = ResultParser.parseForTree(stdout);
+    $scope.d3TreeData = ResultParser.parseForTree(stdout, parameters);
   }
 
   var getScenarioInfo = function(type) {

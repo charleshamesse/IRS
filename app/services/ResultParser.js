@@ -161,14 +161,13 @@ angular.module('app')
     var treeData = {
       "name": "Initial",
       "parent": "null",
-      "score": 19688,
+      "score": stdout.trim().split('\n')[0].trim().split(' ')[1], // sort of a hack for the first score
       "parameterName": "Initial",
       "children": []
     },
     previousSectionTree = treeData,
     parameters = augmentWithDependecies(parameters);
     var sections = makeSections(stdout, parameters);
-
 
     // For each section
     angular.forEach(sections, function(section) {
@@ -218,7 +217,7 @@ angular.module('app')
 
         }
         else {
-          previousSectionTree.children.push(node);
+          treeData.children.push(node);
         }
 
         previousNode = node;

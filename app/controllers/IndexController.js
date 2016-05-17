@@ -235,7 +235,7 @@ angular.module('app')
   ];
 
   if (process.platform == 'darwin') {
-    var name = remote.app.getName();
+    var name = "IR Studio";
     template.unshift({
       label: name,
       submenu: [

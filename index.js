@@ -33,7 +33,7 @@ function createMainWindow() {
 	});
 
 	win.loadURL(`file://${__dirname}/index.html`);
-  //win.openDevTools();
+  win.openDevTools();
 	win.on('closed', onClosed);
 
 	return win;

@@ -5,8 +5,13 @@ angular.module('app')
 
   // Globals and dependencies
   var fs = require('fs'),
-  cp = require('child_process'),
-  mkdirp = require('mkdirp');
+      cp = require('child_process'),
+      mkdirp = require('mkdirp');
+  cp.execFileSync(process.env.SHELL, ['-i', '-c', 'launchctl setenv PATH "$PATH"']);
+  const fixPath = require('fix-path');
+  console.log(process.env.PATH);
+  fixPath();
+  console.log(process.env.PATH);
 
   // Refactor
   String.prototype.replaceAll = function(search, replacement) {
