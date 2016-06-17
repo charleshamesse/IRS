@@ -83,8 +83,9 @@
                   <tr ng-repeat="candidate in Launch.scenario.content.candidates.candidates | filter: searchCandidates track by $index" class="irs candidate">
                     <td class="irs candidate-idx padding-r">{{ $index+1 }}</td>
                     <td class="irs candidate-actions">
-                      <input ng-show="Launch.command.type=='full'" type="radio" ng-model="Launch.selectedCandidate" value="{{ $index }}"></input>
-                      <input ng-show="Launch.command.type!='full'" type="checkbox" ng-model="candidate.selected" value="{{ $index }}"></input>
+                      <input ng-show="Launch.command.type=='full'" type="radio" ng-model="Launch.selectedCandidate" value="{{ $index }}" />
+						<input ng-show="Launch.command.type!='full'" type="checkbox" ng-model="candidate.selected"
+							   value="{{ $index }}"/>
                     </td>
                     <td  class="irs candidate-label">{{ candidate.label }}</td>
                     <td  class="irs candidate-data" ng-repeat="parameter in Launch.scenario.content.candidates.parameters track by $index"> {{ candidate.values[$index] }}</td>
@@ -97,41 +98,69 @@
               <div class="spacer"></div>
             </div>
 
-            <!-- Parameters -->
-            <div class="col-sm-12">
-              <div class="row">
-                <div class="col-sm-6">
-                  <h2>Parameter selection</h2>
-                </div>
-                <div class="col-sm-6" align="right">
-                  <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
-                </div>
-              </div>
-              <div class="spacer small"></div>
+			  <!-- Parameters -->
+			  <div class="col-sm-12">
+				  <div class="row">
+					  <div class="col-sm-6">
+						  <h2>Parameter selection</h2>
+					  </div>
+					  <div class="col-sm-6" align="right">
+						  <input type="text" ng-model="searchParameters" class="irs" placeholder="Filter parameters.."/>
+					  </div>
+				  </div>
+				  <div class="spacer small"></div>
 
-              <div class="row">
-                <div class="col-sm-9">
-                  <div class="overflow-tbody">
-                    <button
-                    ng-click="p.selected = !p.selected;"
-                    ng-repeat="p in Launch.parameterSelection | filter:searchParameters track by $index"
-                    type="button" class="btn btn-default irs tag"
-                    ng-mouseover="Launch.viewParameter(p);">
-                    <input type="checkbox" aria-label="Use candidate" ng-model="p.selected"></input> {{ p.name }}
-                  </button>
-                </div>
-              </div>
-              <div class="col-sm-3 irs parameter-view" ng-show="Launch.hoverParameter">
-                <strong>{{ Launch.hoverParameter.name }}</strong><br />
-                type: {{ Launch.parameterTypes[Launch.hoverParameter.type].name }}<br />
-                switch: "{{ Launch.hoverParameter.switch }}"<br />
-                values: {{ Launch.hoverParameter.values }}<br />
-                conditions: {{ Launch.hoverParameter.conditions || "none" }}
-              </div>
-            </div>
-            <div class="spacer small"></div>
-          </div>
-        </div>
+				  <div class="row">
+					  <div class="col-sm-9">
+						  <div class="overflow-tbody">
+							  <button
+									  ng-click="p.selected = !p.selected;"
+									  ng-repeat="p in Launch.parameterSelection | filter:searchParameters track by $index"
+									  type="button" class="btn btn-default irs tag"
+									  ng-mouseover="Launch.viewParameter(p);">
+								  <input type="checkbox" aria-label="Use candidate" ng-model="p.selected"/> {{ p.name }}
+							  </button>
+						  </div>
+					  </div>
+					  <div class="col-sm-3 irs parameter-view" ng-show="Launch.hoverParameter">
+						  <strong>{{ Launch.hoverParameter.name }}</strong><br />
+						  type: {{ Launch.parameterTypes[Launch.hoverParameter.type].name }}<br />
+						  switch: "{{ Launch.hoverParameter.switch }}"<br />
+						  values: {{ Launch.hoverParameter.values }}<br />
+						  conditions: {{ Launch.hoverParameter.conditions || "none" }}
+					  </div>
+				  </div>
+				  <div class="spacer small"></div>
+			  </div>
+			  <div class="col-sm-12">
+				  <div class="spacer"></div>
+			  </div>
+		  </div>
+		  <div class="row"  ng-show="Launch.command.type == 'irace'">
+			<!-- Irace's forbidden candidates -->
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-sm-6">
+						<h2>Forbidden candidates</h2>
+					</div>
+				</div>
+				<div class="spacer small"></div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="irs form-inline-box">
+							<div class="irs form-inline">
+								<input class="irs large" type="text" ng-model="Launch.forbiddenCandidates" placeholder="Forbidden candidates file" />
+							</div>
+							<div class="irs form-inline">
+								<button class="irs large" ng-click="Launch.openForbiddenCandidates();">Import</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="spacer small"></div>
+			</div>
+		</div>
       </div>
     </div>
     <div class="spacer" ng-if="Launch.display.new"></div>
