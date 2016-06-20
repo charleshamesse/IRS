@@ -1,6 +1,8 @@
 <script src="assets/js/svgtopng.js"></script>
 <div class="irs padding" ng-controller="ResultsController" ng-init="Results.file = file; Results.prepare();">
   <div class="row">
+
+	  <!-- Header -->
     <div class="col-sm-9 col-xs-6">
         <div style="white-space:nowrap">
           <label  for="Title"><h2>Title:</h2></label>
@@ -19,12 +21,15 @@
     <div class="col-sm-12">
       <textarea ng-model="Results.file.content.content.text.abstract" rows="2" cols="50"  class="irs comment" placeholder="Insert abstract here.."></textarea>
     </div>
+
+	  <!-- Results -->
+	  <div ng-if="Results.file.content.content.command.type != 'irace'">
     <div class="col-sm-12">
       <h2>Results</h2>
     </div>
     <div class="col-sm-12">
       <h3>Line plot</h3>
-      <d3-ordinal-line data="d3Data" id="linePlot-{{ Results.file.name  }}" label="name"></d3-bars>
+      <d3-ordinal-line data="d3Data" id="linePlot-{{ Results.file.name  }}" label="name"></d3-ordinal-line>
     </div>
     <div class="col-sm-12">
     <textarea ng-model="Results.file.content.content.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
@@ -32,12 +37,44 @@
     <div class="col-sm-12">
       <h3>Tree</h3>
       <div style="overflow-x: auto;">
-      <d3-horizontal-tree data="d3TreeData" id="treePlot-{{ Results.file.name  }}" label="name"></d3-horizontal-tree>
+      <d3-vertical-tree data="d3TreeData" id="treePlot-{{ Results.file.name  }}" label="name"></d3-vertical-tree>
       </div>
     </div>
     <div class="col-sm-12">
     <textarea ng-model="Results.file.content.content.text.secondGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>
     </div>
+	  </div>
+
+
+	  <div ng-if="Results.file.content.content.command.type == 'irace'">
+		  <div class="col-sm-12">
+			  <h2>Results</h2>
+		  </div>
+		  <div class="col-sm-12">
+			  <h3>iRace information</h3>
+			  <div class="spacer"></div>
+			  <p ng-repeat="line in iraceInfo">{{ line }}</p>
+		  </div>
+		  <div class="col-sm-12">
+			  <h3>Elite candidates performance</h3>
+			  <div style="overflow-x: auto;">
+				  <d3-box-plot data="d3BoxPlotData" id="boxPlot-{{ Results.file.name  }}" label="name"></d3-box-plot>
+			  </div>
+		  </div>
+		  <div class="col-sm-12">
+			  <h3>Best candidates comparison</h3>
+			  <div style="min-width: 100%; overflow-x: auto;">
+				  <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" id="parallelCoordinatesPlot-{{ Results.file.name  }}" label="name"></d3-parallel-coordinates-plot>
+			  </div>
+		  </div>
+		  <div class="col-sm-12">
+			  <h3>Iteration elites</h3>
+			  <div style="overflow-x: auto;">
+				  <d3-box-plot data="d3BoxPlotData2" id="boxPlot2-{{ Results.file.name  }}" label="name"></d3-box-plot>
+			  </div>
+		  </div>
+	  </div>
+	  <!-- Conclusion and scenario data -->
     <div class="col-sm-12">
       <h2>Conclusion</h2>
     </div>

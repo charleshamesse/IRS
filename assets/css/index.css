@@ -43,6 +43,11 @@ h1 {
 h1.welcome {
 	font-size: 40px;
 }
+h1.welcome small {
+	font-weight: 200;
+	color: #333;
+	font-size: 15px;
+}
 h2 {
 	font-weight: 100;
 	margin: 0 0 15px 0;
@@ -297,6 +302,9 @@ input.irs.discreet, select.irs.discreet {
 .irs.border-right {
 	border-right: 1px solid #eee;
 }
+.irs.border-right-dark {
+	border-right: 1px solid #ddd;
+}
 strong {
 	color: #555;
 }
@@ -401,4 +409,69 @@ textarea.irs.comment {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;
+}
+
+.home-bg {
+	background-image: url('../img/pattern.png');
+}
+
+.irs.terminal-output {
+	white-space: pre;
+	font-family: monospace;
+}
+
+
+.box {
+	font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+	fill: #fff;
+	stroke: rgb(154, 179, 205);
+	stroke-width: 1.5px;
+}
+
+.box .center {
+	stroke-dasharray: 1,1;
+}
+
+.box .outlier {
+	fill: none;
+	stroke: #ccc;
+}
+
+
+svg {
+	font: 10px sans-serif;
+}
+
+.background path {
+	fill: none;
+	stroke: #ddd;
+	shape-rendering: crispEdges;
+}
+
+.foreground path {
+	fill: none;
+	stroke: rgb(82, 154, 190);
+}
+
+.brush .extent {
+	fill-opacity: .3;
+	stroke: #fff;
+	shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+	cursor: move;
 }

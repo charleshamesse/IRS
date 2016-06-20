@@ -28,13 +28,6 @@ angular.module('app')
     return result.plotData;
   };
 
-  this.parseAblation = function(stdout) {
-    result.topline = "Hi! Here's your result";
-    result.stdout = stdout;
-    result.bottomline = "Done. :)";
-    return result;
-  };
-
   function getParameterSpace(lines) {
     var parameters = [];
     lines.forEach(function(l) {

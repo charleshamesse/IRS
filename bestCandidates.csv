@@ -1,0 +1,6 @@
+algorithm,localsearch,alpha,beta,rho,ants,nnls,q0,dlb,rasrank,elitistants
+raewfs,3,4.1017,5.6895,0.1509,28,26,NA,1,NA,NA
+as,2,0.3865,6.8316,0.1225,36,48,NA,0,NA,NA
+acs,3,3.0848,2.9382,0.3149,10,33,0.5826,1,NA,NA
+as,3,2.3344,4.2124,0.2834,10,7,NA,0,NA,NA
+acs,3,0.0283,6.8871,0.2803,40,48,0.0908,0,NA,NA

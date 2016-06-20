@@ -18,6 +18,7 @@
 	<script src="app/services/Explorer.js"></script>
 	<script src="app/services/FileWriter.js"></script>
 	<script src="app/services/FileParser.js"></script>
+	<script src="app/services/IraceTools.js"></script>
 	<script src="app/controllers/IndexController.js"></script>
 	<script src="app/controllers/SetupController.js"></script>
 	<script src="app/controllers/LaunchController.js"></script>
@@ -30,9 +31,8 @@
 <body ng-controller="IndexController">
 	<div class="container-fluid irs full-height">
 		<div class="row irs main">
-
 			<!-- Sidebar -->
-			<div class="col-sm-2 hidden-xs irs sidebar nopadding" ng-cloak>
+			<div class="col-sm-2 hidden-xs irs sidebar nopadding" ng-show="Main.displayProjectWindow" ng-cloak>
 				<!-- Root node -->
 				<span class="irs file-exp root-dir blue">
 					<i class="fa fa-fw fa-angle-down fa-small"></i>&nbsp;<i class="fa fa-folder fa-small">&nbsp;</i>&nbsp;{{ FileExplorer.rootNode.name }}&nbsp;({{ FileExplorer.rootNode.path }})
@@ -45,7 +45,7 @@
 			</div>
 
 			<!-- Main panel -->
-			<div class="col-sm-10 irs center-panel full-height nopadding">
+			<div class="irs center-panel full-height nopadding" ng-class="{'home-bg': FileManager.filesOpened.length == 0, 'col-sm-10': Main.displayProjectWindow, 'col-sm-12': !Main.displayProjectWindow}">
 
 				<!-- Tabs -->
 				<ul class="irs tabs">

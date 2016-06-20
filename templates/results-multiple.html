@@ -26,13 +26,13 @@
 
     <div class="col-sm-12 col-xs-12">
       <div style="white-space:nowrap">
-        <label  for="Title"><h2>#{{ $index+1 }}:</h2></label>
-        <input id="Title" ng-model="e.name" class="irs h2" type="text" placeholder="Insert title here..">
+        <label  for="ExpTitle"><h2>#{{ $index+1 }}:</h2></label>
+        <input id="ExpTitle" ng-model="e.name" class="irs h2" type="text" placeholder="Insert title here..">
       </div>
     </div>
     <div class="col-sm-12">
       <h3>Line plot</h3>
-      <d3-ordinal-line data="e.d3Data" id="linePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-bars>
+      <d3-ordinal-line data="e.d3Data" id="linePlot-{{ file.name  }}-{{ $index }}" label="name"></d3-ordinal-line>
       </div>
       <div class="col-sm-12">
         <textarea ng-model="e.text.firstGraph" rows="4" cols="50"  class="irs comment" placeholder="Insert comments here.."></textarea>

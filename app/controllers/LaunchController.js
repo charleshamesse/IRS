@@ -1,5 +1,5 @@
 angular.module('app')
-	.controller('LaunchController', function ($scope, $sce, $filter, $timeout, FileWriter, Explorer, ResultParser) {
+	.controller('LaunchController', function ($scope, $sce, $filter, $timeout, FileWriter, FileParser, Explorer, IraceTools) {
 			// Globals
 			$scope.Launch = {
 				"isLaunched": false,
@@ -213,8 +213,12 @@ angular.module('app')
 				$scope.Launch.command.logFile = logFile;
 				$scope.Launch.makeCommand(d);
 
+				// Reset explorer
+				Explorer.init();
+
 				if ($scope.Launch.command.type != 'irace') {
 					// Everything is already prep'd
+					console.log("Expl launched, not irace");
 					Explorer.launchFullOrAblation($scope.Launch.command);
 				}
 				else {
@@ -224,6 +228,8 @@ angular.module('app')
 						testInstancesFile = $scope.Launch.scenario.content.instances.testing_uri,
 						hookRunFile = $scope.Launch.scenario.content.hookrun_uri;
 					FileWriter.writeIraceScenarioFile(scenarioFile, parameterFile, resourcesDir, trainInstancesFile, testInstancesFile, candidatesFile, hookRunFile);
+					// Update command with logfile
+					$scope.Launch.command.logFile = resourcesDir + "irace.Rdata";
 					// Launch
 					Explorer.launchIrace(scenarioFile);
 				}
@@ -261,7 +267,23 @@ angular.module('app')
 							"dates": $scope.Launch.dates,
 							"dir": resourcesDir
 						});
+						console.log("Saving exploration");
 						$scope.FileManager.save();
+
+						// If irace: add candidates
+						if($scope.Launch.command.type == 'irace') {
+							var getEliteCandidatesCallback = function(code, path) {
+								if(code == 0) {
+									var new_candidates = FileParser.parseCandidateFile(path); // returns [p, c]
+									new_candidates[1].forEach(function(new_candidate, index) {
+										new_candidate.label = 'iRace candidate (' + $scope.Launch.explorationName + ') ' + (index+1);
+										$scope.Launch.scenario.content.candidates.candidates.push(new_candidate);
+									});
+								}
+							}
+							IraceTools.getEliteCandidates(resourcesDir, getEliteCandidatesCallback);
+						}
+						finished = false;
 					}
 				};
 
@@ -272,7 +294,6 @@ angular.module('app')
 
 				// Log and add to exp list
 				log("Launched an exploration using " + $scope.Launch.command.type, "Command preview: " + $scope.Launch.command.preview);
-
 
 			}
 

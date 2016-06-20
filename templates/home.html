@@ -1,87 +1,95 @@
 <div class="irs padding">
-  <!-- First time -->
-  <div ng-show="Main.displayCfg" >
-    <div class="row">
-      <div class="col-sm-12"align="center">
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-        <img src="assets/img/logo.png" width="20%" />
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-        <h1 class="welcome">Welcome to IR Studio</h1>
-        <p class="lead text-muted">It looks like it's your first time here.</p>
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3"></div>
-      <div class="col-sm-6">
-        Before going any further, please give the path to your R master script and to your workspace:
-        <div class="spacer"></div>
-      </div>
-      <div class="col-sm-3"></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3"></div>
+	<!-- First time -->
+	<div ng-show="Main.displayCfg">
+		<div class="row">
+			<div class="col-sm-12" align="center">
+				<div class="spacer"></div>
+				<div class="spacer"></div>
+				<img src="assets/img/logo.png" width="20%"/>
+				<div class="spacer"></div>
+				<div class="spacer"></div>
+				<h1 class="welcome">Welcome to IR Studio</h1>
+				<p class="lead text-muted">It looks like it's your first time here.</p>
+				<div class="spacer"></div>
+				<div class="spacer"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6">
+				Before going any further, please give the path to your R master script and to your workspace:
+				<div class="spacer"></div>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3"></div>
 
-      <div class="col-sm-6">
-        <div class="irs form-inline-box">
-          <div class="irs form-inline">
-            <input class="irs large" type="text" ng-model="Main.cfgRscript" placeholder="R script path.." />
-          </div>
-          <div class="irs form-inline">
-            <button class="irs large" ng-click="Main.openRscript();">Open..</button>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-3"></div>
-    </div>
-    <div class="row">
-      <div class="spacer"></div>
-      <div class="col-sm-3"></div>
-      <div class="col-sm-6">
-        <div class="irs form-inline-box">
-          <div class="irs form-inline">
-            <input class="irs large" type="text" ng-model="Main.cfgWorkspace" placeholder="Worskpace.." />
-          </div>
-          <div class="irs form-inline">
-            <button class="irs large" ng-click="Main.openWorkspace();">Open..</button>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-3"></div>
-    </div>
-    <div class="row">
-      <div class="spacer"></div>
-      <div class="col-sm-3"></div>
-      <div class="col-sm-6" ng-show="Main.cfgWorkspace && Main.cfgRscript">
-        <button class="irs large" ng-click="Main.updateConfig();">Let's get started</button>
-      </div>
-      <div class="col-sm-3"></div>
-    </div>
-  </div>
+			<div class="col-sm-6">
+				<div class="irs form-inline-box">
+					<div class="irs form-inline">
+						<input class="irs large" type="text" ng-model="Main.cfgRscript" placeholder="R script path.."/>
+					</div>
+					<div class="irs form-inline">
+						<button class="irs large" ng-click="Main.openRscript();">Open..</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+		<div class="row">
+			<div class="spacer"></div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6">
+				<div class="irs form-inline-box">
+					<div class="irs form-inline">
+						<input class="irs large" type="text" ng-model="Main.cfgWorkspace" placeholder="Worskpace.."/>
+					</div>
+					<div class="irs form-inline">
+						<button class="irs large" ng-click="Main.openWorkspace();">Open..</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+		<div class="row">
+			<div class="spacer"></div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6" ng-show="Main.cfgWorkspace && Main.cfgRscript">
+				<button class="irs large" ng-click="Main.updateConfig();">Let's get started</button>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+	</div>
 
-  <!-- Other times -->
-  <div class="row" ng-show="!Main.displayCfg">
-    <div class="col-sm-12" align="center">
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <img src="assets/img/logo.png" width="20%" />
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <h1 class="welcome">Welcome to IR Studio</h1>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-    </div>
-    <div class="col-sm-4">
-      <h2>Build scenario</h2>
-    </div>
-    <div class="col-sm-4">
-      <h2>Launch exploration</h2>
-    </div>
-    <div class="col-sm-4">
-      <h2>Analyse results</h2>
-    </div>
-  </div>
+	<!-- Other times -->
+	<div class="row" ng-show="!Main.displayCfg">
+		<div class="col-sm-12" align="center">
+			<h1 class="welcome"><strong>IR</strong>Studio</h1>
+			<p>Version 0.1 - June 16</p>
+			<div class="spacer"></div>
+			<div class="spacer"></div>
+			<img src="assets/img/logo.png" width="30%"/>
+			<div class="spacer"></div>
+			<div class="spacer"></div>
+		</div>
+		<div class="col-sm-4 irs padding border-right-dark">
+			<div>
+				<h2>1 | Build <strong>scenarios</strong></h2>
+			</div>
+			The scenario describes the parameter space, the training and testing instances, the hook-run method and the initial candidates.
+		</div>
+		<div class="col-sm-4 irs padding border-right-dark">
+			<div>
+				<h2>2 | Launch <strong>explorations</strong></h2>
+			</div>
+			Explore the parameter space with algorithms such as iRace, Full Exploration or Ablation.
+		</div>
+		<div class="col-sm-4 irs padding">
+			<div>
+			<h2>3 | Analyse <strong>results</strong></h2>
+				</div>
+			IRStudio provides interesting graphs and plots based on the exploration output data.
+		</div>
+	</div>
 </div>

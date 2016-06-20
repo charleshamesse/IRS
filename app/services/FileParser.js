@@ -89,4 +89,46 @@ angular.module('app')
   };
 
 
+	this.parseIraceTestElitesFile = function(path) {
+		var data = fs.readFileSync(path, 'utf8');
+		if (!data) dialog.showMessageBox('Error', 'Unable to open file: ' + path);
+
+		var lines = data.trim().split('\n'),
+			iterations = [],
+			tokens = [];
+
+		lines.forEach(function(l, lindex) {
+			if(lindex > 0) {
+				tokens = l.split(' ');
+				tokens.forEach(function (t, tindex) {
+					if (tindex > 0) {
+						if (!iterations[tindex - 1]) {
+							iterations[tindex - 1] = [];
+						}
+						iterations[tindex - 1].push(t);
+					}
+				});
+			}
+		});
+		return iterations;
+	};
+
+	this.getCSVFromIraceIterationsConfigurationsFile = function(path) {
+		var data = fs.readFileSync(path, 'utf8');
+		if (!data) dialog.showMessageBox('Error', 'Unable to open file: ' + path);
+
+		var lines = data.trim().split('\n'),
+			lines2 = "";
+
+		lines.forEach(function(l, lindex) {
+			l = l.replace(/ /g, ",");
+			lines2 += l + "\n";
+		});
+		lines2.trim();
+
+		return lines2;
+
+	};
+
+
 });

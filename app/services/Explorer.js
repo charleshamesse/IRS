@@ -16,6 +16,13 @@ angular.module('app')
 			startDate,
 			stopDate;
 
+		this.init = function() {
+			Explorer = {
+				"terminalOutput": "",
+				"exitCode": ""
+			};
+			finished = false;
+		}
 		// Init
 		this.setRscript = function (p) {
 			rscript = p;
@@ -35,12 +42,12 @@ angular.module('app')
 			Explorer.terminalOutput = "";
 			var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
 			startDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
-			var cmd = cp.exec('Rscript "' + rscript + '" '
+			var cmd = cp.exec('Rscript assets/rscripts/explore.R ' //"' + rscript + '" '
 				+ '--parameter-file "' + parameters.parameterFile + '" '
 				+ '--sel-param-file "' + parameters.selectionFile + '" '
-				+ '--candidates-file "' + parameters.candidatesFile + '" '
+				+ '--configurations-file "' + parameters.candidatesFile + '" '
 				+ '--instance-file "' + parameters.instanceFile + '" '
-				+ '--hook-run "' + parameters.hookRun + '" '
+				+ '--target-runner "' + parameters.hookRun + '" '
 				+ '--parallel 1 --type "' + parameters.type + '" '
 				+ '--log-file "' + parameters.logFile + '"');
 			cmd.stdout.on('data', function (data) {

@@ -9,9 +9,7 @@ angular.module('app')
       mkdirp = require('mkdirp');
   cp.execFileSync(process.env.SHELL, ['-i', '-c', 'launchctl setenv PATH "$PATH"']);
   const fixPath = require('fix-path');
-  console.log(process.env.PATH);
   fixPath();
-  console.log(process.env.PATH);
 
   // Refactor
   String.prototype.replaceAll = function(search, replacement) {
@@ -309,7 +307,7 @@ testIterationElites = 0
 
 ## END of scenario file
 ############################################################################`;
-		
+
 		// Write
 		return this.write(path, content);
 	}
@@ -331,8 +329,19 @@ testIterationElites = 0
         exportNow = true;
       });
       break;
-      case 'ablation':
-      break;
+		case 'ablation':
+			lines = result.trim().split('\n');
+			angular.forEach(lines, function(l) {
+				l = l.trim();
+				if(exportNow)
+					lines2.push(l);
+				if(l == '### EXECUTING FULL EXPLORATION')
+					exportNow = true;
+			});
+			break;
+		case 'irace':
+			lines2 = result.trim().split('\n');
+			break;
     }
     var content = {
       "type": "results",
