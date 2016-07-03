@@ -17,7 +17,7 @@
 		<div class="row">
 			<div class="col-sm-3"></div>
 			<div class="col-sm-6">
-				Before going any further, please give the path to your R master script and to your workspace:
+				Before going any further, please give paths to your iRace install and your workspace:
 				<div class="spacer"></div>
 			</div>
 			<div class="col-sm-3"></div>
@@ -28,10 +28,10 @@
 			<div class="col-sm-6">
 				<div class="irs form-inline-box">
 					<div class="irs form-inline">
-						<input class="irs large" type="text" ng-model="Main.cfgRscript" placeholder="R script path.."/>
+						<input class="irs large" type="text" ng-model="Main.cfgIscript" placeholder="iRace path.."/>
 					</div>
 					<div class="irs form-inline">
-						<button class="irs large" ng-click="Main.openRscript();">Open..</button>
+						<button class="irs large" ng-click="Main.openIscript();">Open..</button>
 					</div>
 				</div>
 			</div>
@@ -55,7 +55,7 @@
 		<div class="row">
 			<div class="spacer"></div>
 			<div class="col-sm-3"></div>
-			<div class="col-sm-6" ng-show="Main.cfgWorkspace && Main.cfgRscript">
+			<div class="col-sm-6" ng-show="Main.cfgWorkspace && Main.cfgIscript">
 				<button class="irs large" ng-click="Main.updateConfig();">Let's get started</button>
 			</div>
 			<div class="col-sm-3"></div>

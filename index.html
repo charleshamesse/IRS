@@ -26,6 +26,7 @@
 	<script src="app/controllers/ResultsMultipleController.js"></script>
 	<script src="app/factories/FileExplorer.js"></script>
 	<script src="app/factories/FileManager.js"></script>
+	<script src="app/factories/RScripts.js"></script>
 
 </head>
 <body ng-controller="IndexController">
@@ -58,7 +59,7 @@
 				<div class="irs contents">
 					<div ng-repeat="file in FileManager.filesOpened" class="irs full-height" ng-show="file.active" ng-include="file.editor">
 					</div>
-					<div ng-show="FileManager.filesOpened.length == 0" ng-include="'templates/home.html'"></div>
+					<div ng-show="FileManager.filesOpened.length == 0" ng-include="'templates/home.html'" ng-init="Main.cfg = Main.cfg"></div>
 				</div>
 
 	</div>

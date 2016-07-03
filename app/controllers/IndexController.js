@@ -1,5 +1,5 @@
 angular.module('app')
-	.controller('IndexController', function ($scope, FileExplorer, FileManager) {
+	.controller('IndexController', function ($scope, FileExplorer, FileManager, FileWriter) {
 
 		// Globals
 		const remote = require('remote');
@@ -17,30 +17,35 @@ angular.module('app')
 		$scope.Main = {
 			"cfg": {
 				"workspace": "",
-				"rscript": ""
+				"rscripts": app.getPath("userData") + mpath.sep + 'rscripts' + mpath.sep,
+				"iscript": ""
 			},
 			"displayProjectWindow": false
 		};
-
 		var cfgExists = false;
-		try {
-			if (fs.statSync(cfgpath).isFile()) {
-				cfgExists = true;
-				var data;
-				if ((data = fs.readFileSync(cfgpath, 'utf8'))) {
-					$scope.Main.cfg = angular.fromJson(data);
-					// Set file explorer root node
-					$scope.FileExplorer.setBasePath($scope.Main.cfg.workspace);
-					$scope.FileManager.setBasePath($scope.Main.cfg.workspace);
+		var testCfg = function() {
+			try {
+				if (fs.statSync(cfgpath).isFile()) {
+					cfgExists = true;
+					var data;
+					if ((data = fs.readFileSync(cfgpath, 'utf8'))) {
+						$scope.Main.cfg = angular.fromJson(data);
+						// Set file explorer root node
+						$scope.FileExplorer.setBasePath($scope.Main.cfg.workspace);
+						$scope.FileManager.setBasePath($scope.Main.cfg.workspace);
+						$scope.Main.displayCfg = false;
+					}
 				}
 			}
+			catch (e) {
+				//console.log("There isn't any config file" + e);
+			}
+			if (!cfgExists) {
+				$scope.Main.displayCfg = true;
+			}
 		}
-		catch (e) {
-			console.log("There isn't any config file" + e);
-		}
-		if (!cfgExists) {
-			$scope.Main.displayCfg = true;
-		}
+
+		testCfg();
 
 		$scope.Main.openWorkspace = function () {
 			var dir = dialog.showOpenDialog({properties: ["openDirectory", "createDirectory"]});
@@ -48,21 +53,28 @@ angular.module('app')
 			$scope.Main.cfgWorkspace = dir[0];
 		}
 
-		$scope.Main.openRscript = function () {
+		$scope.Main.openIscript = function () {
 			var file = dialog.showOpenDialog({properties: ["openFile"]});
 			if (!file) return 0;
-			$scope.Main.cfgRscript = file[0];
+			$scope.Main.cfgIscript = file[0];
 		}
 		$scope.Main.updateConfig = function () {
 			var success = false,
 				data = {
 					"workspace": $scope.Main.cfgWorkspace,
-					"rscript": $scope.Main.cfgRscript
+					"rscripts": app.getPath("userData") + mpath.sep + 'rscripts' + mpath.sep,
+					"iscript": $scope.Main.cfgIscript
 				};
 			try {
 				// write on config file, exists it or not.
 				fs.writeFileSync(cfgpath, JSON.stringify(data), 'utf8');
+				// Also write R scripts (if cfg present, rscripts present)
+				FileWriter.writeRScripts(app.getPath("userData") + mpath.sep);
 				success = true;
+
+				testCfg();
+				$scope.Main.displayProjectWindow = true;
+
 			}
 			catch (e) {
 				console.log(e);
@@ -166,6 +178,15 @@ angular.module('app')
 						accelerator: 'CmdOrCtrl+A',
 						role: 'selectall'
 					},
+					{
+						type: 'separator'
+					},
+					{
+						label: 'Erase configuration',
+						click: function(item, focusedWindow) {
+							fs.unlinkSync(cfgpath);
+						}
+					}
 				]
 			},
 			{

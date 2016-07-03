@@ -47,8 +47,9 @@ angular.module('app')
 					"value": "o"
 				}
 			};
-			Explorer.setRscript($scope.Main.cfg.rscript);
-			console.log($scope.Main.cfg.rscript);
+		console.log($scope.Main.cfg);
+		Explorer.setRscript($scope.Main.cfg.rscripts + 'explore.R');
+		Explorer.setIpath($scope.Main.cfg.iscript);
 
 			// Dependencies
 			var fs = require('fs');
@@ -130,7 +131,7 @@ angular.module('app')
 
 						// 4. Apply
 						$scope.Launch.scenarioLoaded = true;
-						//$scope.$apply();
+						$scope.$apply();
 
 						// 5. Log
 						log("Loaded scenario " + mpath.basename($scope.Launch.file.content.content.scenario_uri), "Complete scenario path: " + $scope.Launch.file.content.content.scenario_uri);
@@ -260,13 +261,13 @@ angular.module('app')
 					}
 					else {
 						// Push and save file
-						$scope.Launch.dates = Explorer.getDates();
-						$scope.Launch.file.content.content.explorations.push({
+						$scope.Launch.dates = JSON.parse(JSON.stringify(Explorer.getDates()));
+						$scope.Launch.file.content.content.explorations.push(JSON.parse(JSON.stringify({
 							"name": $scope.Launch.explorationName,
 							"command": $scope.Launch.command,
 							"dates": $scope.Launch.dates,
 							"dir": resourcesDir
-						});
+						})));
 						console.log("Saving exploration");
 						$scope.FileManager.save();
 

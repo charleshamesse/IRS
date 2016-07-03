@@ -19,9 +19,11 @@ angular.module('app')
     angular.forEach($scope.file.content.content.explorations, function(e) {
 
       e.stdout = "";
-      var output = fs.readFileSync(e.command.logFile, 'utf8');
+      var output = fs.readFileSync(e.command.logFile, 'utf-8');
+		console.log(e.command.logFile);
       if(!output) return 0;
       e.stdout = output.trim();
+		console.log(e.stdout);
       e.d3Data = ResultParser.parseFullExploration(e.stdout);
       e.d3TreeData = ResultParser.parseForTree(e.stdout, FileParser.parseParameterFile(e.command.parameterFile));
 

@@ -23,6 +23,11 @@
     "index.css",
     "templates",
     "assets",
+    "assets/rscripts/explore.R",
+    "assets/rscripts/getEliteCandidates.R",
+    "assets/rscripts/getIraceInfo.R",
+    "assets/rscripts/getIterationCandidates.R",
+    "assets/rscripts/getTestElites.R",
     "app"
   ],
   "keywords": [

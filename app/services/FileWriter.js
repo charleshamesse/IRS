@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('app')
-.service('FileWriter', function ($filter) {
+.service('FileWriter', function ($filter, RScripts) {
 
   // Globals and dependencies
   var fs = require('fs'),
       cp = require('child_process'),
+	  mpath = require('path'),
       mkdirp = require('mkdirp');
-  cp.execFileSync(process.env.SHELL, ['-i', '-c', 'launchctl setenv PATH "$PATH"']);
+  //cp.execFileSync(process.env.SHELL, ['-i', '-c', 'launchctl setenv PATH "$PATH"']);
   const fixPath = require('fix-path');
   fixPath();
 
@@ -20,8 +21,9 @@ angular.module('app')
   // Main write method
   this.write = function(path, content) {
     fs.writeFileSync(path, content, 'utf8', (err) => {
-      if (err) throw err;
+      if (err) console.log(err);
     });
+	console.log("writing to " + path);
   }
 
   // Content generation
@@ -664,4 +666,15 @@ testIterationElites = 0
     }
   };
 
+
+	// Write R scripts
+	this.writeRScripts = function(path) {
+		var dir = mkdirp.sync(path + "rscripts") || path + 'rscripts';
+		this.write(dir + mpath.sep + 'explore.R', RScripts.getExplore());
+		this.write(dir + mpath.sep + 'getIraceInfo.R', RScripts.getIraceInfo());
+		this.write(dir + mpath.sep + 'getIterationCandidates.R', RScripts.getIterationCandidates());
+		this.write(dir + mpath.sep + 'getTestByIteration.R', RScripts.getTestByIteration());
+		this.write(dir + mpath.sep + 'getTestElites.R', RScripts.getTestElites());
+		console.log("R scripts written");
+	}
 });

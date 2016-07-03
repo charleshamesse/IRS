@@ -107,6 +107,7 @@ angular.module('app')
         sections.push([]);
       }
 
+
       var sectionParameterData = $filter('filter')(parameters, {name: sectionParameter})[0];
 
       // New section

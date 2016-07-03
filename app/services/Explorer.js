@@ -7,6 +7,7 @@ angular.module('app')
 		var fs = require('fs'),
 			cp = require('child_process'),
 			rscript = "",
+			ipath = "",
 			Explorer = {
 				"terminalOutput": "",
 				"exitCode": ""
@@ -27,6 +28,9 @@ angular.module('app')
 		this.setRscript = function (p) {
 			rscript = p;
 		}
+		this.setIpath = function(p) {
+			ipath = p;
+		}
 
 		// Register observer
 		this.registerObserverCallback = function (callback) {
@@ -41,15 +45,18 @@ angular.module('app')
 		this.launchFullOrAblation = function (parameters) {
 			Explorer.terminalOutput = "";
 			var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+			var explorePath = rscript;
 			startDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
-			var cmd = cp.exec('Rscript assets/rscripts/explore.R ' //"' + rscript + '" '
+			var cmdstring = 'Rscript "' + explorePath + '" ' //"' + rscript + '" '
 				+ '--parameter-file "' + parameters.parameterFile + '" '
 				+ '--sel-param-file "' + parameters.selectionFile + '" '
 				+ '--configurations-file "' + parameters.candidatesFile + '" '
 				+ '--instance-file "' + parameters.instanceFile + '" '
 				+ '--target-runner "' + parameters.hookRun + '" '
 				+ '--parallel 1 --type "' + parameters.type + '" '
-				+ '--log-file "' + parameters.logFile + '"');
+				+ '--log-file "' + parameters.logFile + '"';
+			console.log(cmdstring);
+			var cmd = cp.exec(cmdstring);
 			cmd.stdout.on('data', function (data) {
 				Explorer.terminalOutput += data;
 				notifyObserver(finished);
@@ -71,8 +78,8 @@ angular.module('app')
 			Explorer.terminalOutput = "";
 			var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
 			startDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
-			var iscript = "/Library/Frameworks/R.framework/Versions/3.2/Resources/library/irace/bin/irace";
-			var cmd = cp.exec(iscript + ' --scenario "' + scenarioFile + '"');
+			console.log("Launch irace from: " + ipath);
+			var cmd = cp.exec(ipath + ' --scenario "' + scenarioFile + '"');
 			cmd.stdout.on('data', function (data) {
 				Explorer.terminalOutput += data;
 				notifyObserver(finished);
